@@ -614,6 +614,15 @@ body.touch.edfocus #keybar.enabled{display:flex}
 .sc-help summary{color:var(--accent);cursor:pointer;font-weight:600}
 .sc-help ol{padding-left:20px;line-height:1.6}
 #syncChip{cursor:pointer}
+.sidecollapse{display:none}
+#tabsbar{flex:none;display:flex;align-items:center;background:var(--bg)}
+#tabsbar #tabs{flex:1;min-width:0}
+#tabsToggle{color:var(--fg2);margin-right:6px}
+#tabsShow{display:none;flex:none;width:100%;height:26px;justify-content:center;align-items:center;gap:5px;background:var(--bg);color:var(--fg3);font-size:12px;font-weight:600;border-bottom:1px solid var(--line)}
+#tabsShow:active{color:var(--fg)}
+#v-code.tabs-hidden #tabsbar{display:none}
+#v-code.tabs-hidden #tabsShow{display:flex}
+#sideShow{display:none}
 /* Sheets, diálogos, toast */
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
 #overlay.on{display:flex}
@@ -686,11 +695,19 @@ body.touch.edfocus #keybar.enabled{display:flex}
   .snip{padding:6px 8px;border-radius:6px}.snip:hover{background:#231d2e}.snip .st{font-size:13px}.snip .sd{font-size:11.5px}
   .chipbtn{height:30px;font-size:12.5px;border-radius:6px;padding:0 10px}
   .setting .lbl{font-size:13px}
-  #tabs{padding:0;gap:0;background:#18141f;border-bottom:1px solid #2a2435;flex:none;padding-right:130px}
+  .sidecollapse{display:grid}
+  #tabsbar{background:#18141f;border-bottom:1px solid #2a2435;padding-right:126px}
+  #tabsToggle{margin-right:4px}
+  #tabs{padding:0;gap:0;background:#18141f;flex:none}
   .tab{height:35px;border-radius:0;background:#1d1826;border:0;border-right:1px solid #18141f;font-size:12.5px;padding:0 6px 0 12px}
   .tab.on{background:var(--bg);color:#fff;box-shadow:inset 0 1px 0 var(--accent)}
   .tab .x{width:22px;height:22px;border-radius:4px}
   #crumbs{display:flex;align-items:center;gap:6px;height:22px;flex:none;padding:0 14px;font-size:12px;color:var(--fg2)}
+  #v-code.tabs-hidden #runbtn{top:1px;height:24px}
+  #tabsShow{height:20px;border-bottom:0;justify-content:flex-start;padding-left:14px;width:auto;position:absolute;right:120px;top:0;background:none}
+  #sideShow{width:22px;height:20px;border-radius:5px;color:var(--fg2);display:none;place-items:center;margin-left:-8px}
+  #app.side-closed #sideShow{display:grid}
+  #sideShow:hover{background:var(--accent);color:#fff}
   #runbtn{top:3px;bottom:auto;right:8px;height:29px;border-radius:6px;font-size:12.5px;padding:0 12px 0 10px;gap:6px;box-shadow:none}
   #runbtn svg{width:13px;height:13px}
   #outhead{padding:4px 8px;border-bottom:0}
@@ -777,7 +794,7 @@ li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
     <!-- ================= Painéis laterais ================= -->
     <section class="view" id="v-side">
       <div class="pane" id="pane-files">
-        <div class="pane-h"><span class="t">Arquivos do projeto</span></div>
+        <div class="pane-h"><span class="t">Arquivos do projeto</span><button class="ibtn sm sidecollapse" title="Recolher painel (Ctrl+B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg></button></div>
         <div class="actrow">
           <button class="chipbtn primary" id="newPy"><span class="fbadge py fsm" style="background:rgba(255,255,255,.2);color:#fff">PY</span>Novo Python</button>
           <button class="chipbtn" id="newSql"><span class="fbadge sql fsm">SQL</span>Novo SQL</button>
@@ -789,7 +806,7 @@ li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
         </div>
       </div>
       <div class="pane" id="pane-db">
-        <div class="pane-h"><span class="t">Banco de dados</span>
+        <div class="pane-h"><span class="t">Banco de dados</span><button class="ibtn sm sidecollapse" title="Recolher painel (Ctrl+B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg></button>
           <button class="ibtn sm" id="dbRefresh" title="Atualizar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
         </div>
         <div class="pane-b">
@@ -806,11 +823,11 @@ li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
         </div>
       </div>
       <div class="pane" id="pane-learn">
-        <div class="pane-h"><span class="t">Exemplos para estudar</span></div>
+        <div class="pane-h"><span class="t">Exemplos para estudar</span><button class="ibtn sm sidecollapse" title="Recolher painel (Ctrl+B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg></button></div>
         <div class="pane-b" id="learnlist"></div>
       </div>
       <div class="pane" id="pane-settings">
-        <div class="pane-h"><span class="t">Ajustes</span></div>
+        <div class="pane-h"><span class="t">Ajustes</span><button class="ibtn sm sidecollapse" title="Recolher painel (Ctrl+B)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg></button></div>
         <div class="pane-b">
           <div class="setting"><div class="lbl">Tamanho da fonte</div><div class="stepper"><button id="fsMinus">−</button><b id="fsVal">14</b><button id="fsPlus">+</button></div></div>
           <div class="setting"><div class="lbl">Autocompletar ao digitar<div class="desc">Sugestões de comandos e nomes de tabelas</div></div><label class="switch"><input type="checkbox" id="setAc"><span></span></label></div>
@@ -826,7 +843,7 @@ li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
 
     <!-- ================= Editor ================= -->
     <section class="view" id="v-code">
-      <div id="tabs"></div>
+      <div id="tabsbar"><div id="tabs"></div><button class="ibtn sm" id="tabsToggle" title="Recolher abas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg></button></div><button id="tabsShow" title="Mostrar abas"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg> abas</button>
       <div id="crumbs"></div>
       <div id="editor">
         <div id="empty">
@@ -1747,7 +1764,7 @@ function checkTyping(){
 window.addEventListener('resize', () => { baseH = Math.max(window.innerHeight, baseH); setAppHeight(); applyView(); });
 
 /* ---------------- Navegação entre telas ---------------- */
-let view = 'code', sideView = 'files', sideOpen = true, outMin = false;
+let view = 'code', sideView = 'files', sideOpen = (() => { try { return localStorage.getItem('codestudio:side') !== '0'; } catch { return true; } })(), outMin = false;
 const TITLES = { files:'Arquivos', db:'Banco de dados', learn:'Aprender', settings:'Ajustes', out:'Saída' };
 function setView(v){
   if (isDesk()) {
@@ -1764,6 +1781,7 @@ function setView(v){
   applyView();
 }
 function applyView(){
+  try { localStorage.setItem('codestudio:side', sideOpen ? '1' : '0'); } catch {}
   appEl.dataset.view = view; appEl.dataset.side = sideView;
   appEl.classList.toggle('side-closed', isDesk() && !sideOpen);
   appEl.classList.toggle('out-min', isDesk() && outMin);
@@ -1875,7 +1893,7 @@ function renderTabs(){
   $('#tabs').innerHTML = state.open.map(id => { const f = state.files.find(x => x.id === id); if (!f) return '';
     return `<div class="tab ${id===state.active?'on':''}" data-id="${id}">${fbadge(f.name, true)}<span class="nm">${esc(f.name)}</span><span class="x" data-x="${id}">${IC.x}</span></div>`; }).join('');
   const on = $('#tabs .tab.on'); if (on) on.scrollIntoView({ inline: 'nearest', block: 'nearest' });
-  $('#tabs').style.display = state.open.length ? '' : 'none';
+  $('#tabsbar').style.display = state.open.length ? '' : 'none';
 }
 $('#tabs').addEventListener('click', e => { const x = e.target.closest('[data-x]'); if (x) { e.stopPropagation(); closeTab(x.dataset.x); return; } const t = e.target.closest('.tab'); if (t) openFile(t.dataset.id); });
 function renderFiles(){
@@ -1927,7 +1945,7 @@ function renderChrome(){
   const f = activeFile();
   $('#fcIcon').innerHTML = f ? fbadge(f.name, true) : '';
   $('#fcName').textContent = f ? f.name : 'Luna Studio';
-  $('#crumbs').innerHTML = f ? `<span>projeto</span><span>›</span>${fbadge(f.name, true)}<span style="color:var(--fg)">${esc(f.name)}</span>` : '';
+  $('#crumbs').innerHTML = `<button id="sideShow" title="Mostrar painel (Ctrl+B)" onclick="toggleSide(true)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l6 6-6 6M13 6l6 6-6 6"/></svg></button>` + (f ? `<span>projeto</span><span>›</span>${fbadge(f.name, true)}<span style="color:var(--fg)">${esc(f.name)}</span>` : '');
   const e = f ? extOf(f.name) : '';
   $('#sbLang').textContent = e === 'py' ? 'Python' : e === 'sql' ? 'SQLite' : e ? e.toUpperCase() : '';
   $('#runbtn').style.display = (e === 'py' || e === 'sql') ? '' : 'none';
@@ -1989,6 +2007,16 @@ $('#moreBtn').onclick = () => {
   items.push({ icon: IC.gear, label: 'Ajustes', run: () => setView('settings') });
   sheet(f ? `${fbadge(f.name)}<span>${esc(f.name)}</span>` : '<span>Menu</span>', items);
 };
+
+
+/* Recolher / mostrar painel lateral e abas */
+function toggleSide(force){ if (!isDesk()) { setView('code'); return; } sideOpen = force !== undefined ? force : !sideOpen; applyView(); }
+$$('.sidecollapse').forEach(b => b.onclick = () => toggleSide(false));
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'b' || e.key === 'B')) { e.preventDefault(); toggleSide(); } });
+function applyTabsHidden(){ $('#v-code').classList.toggle('tabs-hidden', !!dev.tabsHidden); setTimeout(() => cm.refresh(), 20); }
+$('#tabsToggle').onclick = () => { dev.tabsHidden = true; saveDev(); applyTabsHidden(); };
+$('#tabsShow').onclick = () => { dev.tabsHidden = false; saveDev(); applyTabsHidden(); };
+applyTabsHidden();
 
 /* ---------------- Saída ---------------- */
 let ptab = 'term';
