@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#0e0c12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Luna Studio">
+<title>Luna Studio — Python & SQL</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* BASICS */
+
+.CodeMirror {
+  /* Set height, width, borders, and global font properties here */
+  font-family: monospace;
+  height: 300px;
+  color: black;
+  direction: ltr;
+}
+
+/* PADDING */
+
+.CodeMirror-lines {
+  padding: 4px 0; /* Vertical padding around content */
+}
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
+  padding: 0 4px; /* Horizontal padding of content */
+}
+
+.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+  background-color: white; /* The little square between H and V scrollbars */
+}
+
+/* GUTTER */
+
+.CodeMirror-gutters {
+  border-right: 1px solid #ddd;
+  background-color: #f7f7f7;
+  white-space: nowrap;
+}
+.CodeMirror-linenumbers {}
+.CodeMirror-linenumber {
+  padding: 0 3px 0 5px;
+  min-width: 20px;
+  text-align: right;
+  color: #999;
+  white-space: nowrap;
+}
+
+.CodeMirror-guttermarker { color: black; }
+.CodeMirror-guttermarker-subtle { color: #999; }
+
+/* CURSOR */
+
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+}
+/* Shown when moving in bi-directional text */
+.CodeMirror div.CodeMirror-secondarycursor {
+  border-left: 1px solid silver;
+}
+.cm-fat-cursor .CodeMirror-cursor {
+  width: auto;
+  border: 0 !important;
+  background: #7e7;
+}
+.cm-fat-cursor div.CodeMirror-cursors {
+  z-index: 1;
+}
+.cm-fat-cursor .CodeMirror-line::selection,
+.cm-fat-cursor .CodeMirror-line > span::selection, 
+.cm-fat-cursor .CodeMirror-line > span > span::selection { background: transparent; }
+.cm-fat-cursor .CodeMirror-line::-moz-selection,
+.cm-fat-cursor .CodeMirror-line > span::-moz-selection,
+.cm-fat-cursor .CodeMirror-line > span > span::-moz-selection { background: transparent; }
+.cm-fat-cursor { caret-color: transparent; }
+@-moz-keyframes blink {
+  0% {}
+  50% { background-color: transparent; }
+  100% {}
+}
+@-webkit-keyframes blink {
+  0% {}
+  50% { background-color: transparent; }
+  100% {}
+}
+@keyframes blink {
+  0% {}
+  50% { background-color: transparent; }
+  100% {}
+}
+
+/* Can style cursor different in overwrite (non-insert) mode */
+.CodeMirror-overwrite .CodeMirror-cursor {}
+
+.cm-tab { display: inline-block; text-decoration: inherit; }
+
+.CodeMirror-rulers {
+  position: absolute;
+  left: 0; right: 0; top: -50px; bottom: 0;
+  overflow: hidden;
+}
+.CodeMirror-ruler {
+  border-left: 1px solid #ccc;
+  top: 0; bottom: 0;
+  position: absolute;
+}
+
+/* DEFAULT THEME */
+
+.cm-s-default .cm-header {color: blue;}
+.cm-s-default .cm-quote {color: #090;}
+.cm-negative {color: #d44;}
+.cm-positive {color: #292;}
+.cm-header, .cm-strong {font-weight: bold;}
+.cm-em {font-style: italic;}
+.cm-link {text-decoration: underline;}
+.cm-strikethrough {text-decoration: line-through;}
+
+.cm-s-default .cm-keyword {color: #708;}
+.cm-s-default .cm-atom {color: #219;}
+.cm-s-default .cm-number {color: #164;}
+.cm-s-default .cm-def {color: #00f;}
+.cm-s-default .cm-variable,
+.cm-s-default .cm-punctuation,
+.cm-s-default .cm-property,
+.cm-s-default .cm-operator {}
+.cm-s-default .cm-variable-2 {color: #05a;}
+.cm-s-default .cm-variable-3, .cm-s-default .cm-type {color: #085;}
+.cm-s-default .cm-comment {color: #a50;}
+.cm-s-default .cm-string {color: #a11;}
+.cm-s-default .cm-string-2 {color: #f50;}
+.cm-s-default .cm-meta {color: #555;}
+.cm-s-default .cm-qualifier {color: #555;}
+.cm-s-default .cm-builtin {color: #30a;}
+.cm-s-default .cm-bracket {color: #997;}
+.cm-s-default .cm-tag {color: #170;}
+.cm-s-default .cm-attribute {color: #00c;}
+.cm-s-default .cm-hr {color: #999;}
+.cm-s-default .cm-link {color: #00c;}
+
+.cm-s-default .cm-error {color: #f00;}
+.cm-invalidchar {color: #f00;}
+
+.CodeMirror-composing { border-bottom: 2px solid; }
+
+/* Default styles for common addons */
+
+div.CodeMirror span.CodeMirror-matchingbracket {color: #0b0;}
+div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
+.CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
+.CodeMirror-activeline-background {background: #e8f2ff;}
+
+/* STOP */
+
+/* The rest of this file contains styles related to the mechanics of
+   the editor. You probably shouldn't touch them. */
+
+.CodeMirror {
+  position: relative;
+  overflow: hidden;
+  background: white;
+}
+
+.CodeMirror-scroll {
+  overflow: scroll !important; /* Things will break if this is overridden */
+  /* 50px is the magic margin used to hide the element's real scrollbars */
+  /* See overflow: hidden in .CodeMirror */
+  margin-bottom: -50px; margin-right: -50px;
+  padding-bottom: 50px;
+  height: 100%;
+  outline: none; /* Prevent dragging from highlighting the element */
+  position: relative;
+  z-index: 0;
+}
+.CodeMirror-sizer {
+  position: relative;
+  border-right: 50px solid transparent;
+}
+
+/* The fake, visible scrollbars. Used to force redraw during scrolling
+   before actual scrolling happens, thus preventing shaking and
+   flickering artifacts. */
+.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+  position: absolute;
+  z-index: 6;
+  display: none;
+  outline: none;
+}
+.CodeMirror-vscrollbar {
+  right: 0; top: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.CodeMirror-hscrollbar {
+  bottom: 0; left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+.CodeMirror-scrollbar-filler {
+  right: 0; bottom: 0;
+}
+.CodeMirror-gutter-filler {
+  left: 0; bottom: 0;
+}
+
+.CodeMirror-gutters {
+  position: absolute; left: 0; top: 0;
+  min-height: 100%;
+  z-index: 3;
+}
+.CodeMirror-gutter {
+  white-space: normal;
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: -50px;
+}
+.CodeMirror-gutter-wrapper {
+  position: absolute;
+  z-index: 4;
+  background: none !important;
+  border: none !important;
+}
+.CodeMirror-gutter-background {
+  position: absolute;
+  top: 0; bottom: 0;
+  z-index: 4;
+}
+.CodeMirror-gutter-elt {
+  position: absolute;
+  cursor: default;
+  z-index: 4;
+}
+.CodeMirror-gutter-wrapper ::selection { background-color: transparent }
+.CodeMirror-gutter-wrapper ::-moz-selection { background-color: transparent }
+
+.CodeMirror-lines {
+  cursor: text;
+  min-height: 1px; /* prevents collapsing before first draw */
+}
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
+  /* Reset some styles that the rest of the page might have set */
+  -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;
+  border-width: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+  line-height: inherit;
+  color: inherit;
+  z-index: 2;
+  position: relative;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-variant-ligatures: contextual;
+  font-variant-ligatures: contextual;
+}
+.CodeMirror-wrap pre.CodeMirror-line,
+.CodeMirror-wrap pre.CodeMirror-line-like {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.CodeMirror-linebackground {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 0;
+}
+
+.CodeMirror-linewidget {
+  position: relative;
+  z-index: 2;
+  padding: 0.1px; /* Force widget margins to stay inside of the container */
+}
+
+.CodeMirror-widget {}
+
+.CodeMirror-rtl pre { direction: rtl; }
+
+.CodeMirror-code {
+  outline: none;
+}
+
+/* Force content-box sizing for the elements where we expect it */
+.CodeMirror-scroll,
+.CodeMirror-sizer,
+.CodeMirror-gutter,
+.CodeMirror-gutters,
+.CodeMirror-linenumber {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+.CodeMirror-measure {
+  position: absolute;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.CodeMirror-cursor {
+  position: absolute;
+  pointer-events: none;
+}
+.CodeMirror-measure pre { position: static; }
+
+div.CodeMirror-cursors {
+  visibility: hidden;
+  position: relative;
+  z-index: 3;
+}
+div.CodeMirror-dragcursors {
+  visibility: visible;
+}
+
+.CodeMirror-focused div.CodeMirror-cursors {
+  visibility: visible;
+}
+
+.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }
+.CodeMirror-crosshair { cursor: crosshair; }
+.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
+.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }
+
+.cm-searching {
+  background-color: #ffa;
+  background-color: rgba(255, 255, 0, .4);
+}
+
+/* Used to force a border model for a node */
+.cm-force-border { padding-right: .1px; }
+
+@media print {
+  /* Hide the cursor when printing */
+  .CodeMirror div.CodeMirror-cursors {
+    visibility: hidden;
+  }
+}
+
+/* See issue #2901 */
+.cm-tab-wrap-hack:after { content: ''; }
+
+/* Help users use markselection to safely style text background */
+span.CodeMirror-selectedtext { background: none; }
+
+.CodeMirror-hints {
+  position: absolute;
+  z-index: 10;
+  overflow: hidden;
+  list-style: none;
+
+  margin: 0;
+  padding: 2px;
+
+  -webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  -moz-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+  border-radius: 3px;
+  border: 1px solid silver;
+
+  background: white;
+  font-size: 90%;
+  font-family: monospace;
+
+  max-height: 20em;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.CodeMirror-hint {
+  margin: 0;
+  padding: 0 4px;
+  border-radius: 2px;
+  white-space: pre;
+  color: black;
+  cursor: pointer;
+}
+
+li.CodeMirror-hint-active {
+  background: #08f;
+  color: white;
+}
+
+:root{
+  --bg:#15121b; --bg2:#0e0c12; --surface:#211c2b; --surface2:#2a2436; --surface3:#372f47;
+  --line:#2a2435; --line2:#3b3249; --fg:#e6e6e6; --fg2:#a0a0a0; --fg3:#6e6e6e;
+  --accent:#b26cff; --accent-bg:rgba(178,108,255,.18); --run:#ec4899; --run2:#c026d3;
+  --red:#f48771; --green:#7ee787; --yellow:#e3b341; --purple:#f472b6;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ui:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+  --fs:14px; --app-h:100%; --out-h:34%; --side-w:300px;
+  --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;width:100%;background:var(--bg2);color:var(--fg);font-family:var(--ui);font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y}
+body{position:fixed;inset:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0;touch-action:manipulation}
+input,textarea{font:inherit;color:inherit}
+svg{display:block;flex:none}
+.grow{flex:1}
+
+/* =============== Estrutura (celular primeiro) =============== */
+#app{height:100%;width:100%;display:flex;flex-direction:column;padding-top:var(--safe-t);background:var(--bg)}
+#topbar{flex:none;height:54px;display:flex;align-items:center;gap:4px;padding:0 6px 0 10px;background:var(--bg2);border-bottom:1px solid var(--line)}
+#topbar .brand{display:none}
+.tc-wrap{display:flex;align-items:center;flex:1;min-width:0}
+#vtitle{font-size:19px;font-weight:700;letter-spacing:-.01em;padding-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fileChip{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 10px;border-radius:12px;background:var(--surface);max-width:62vw;font-weight:600;font-size:15px}
+#fileChip .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fileChip .cv{color:var(--fg2)}
+.ibtn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:var(--fg);flex:none}
+.ibtn:active{background:rgba(255,255,255,.1)}
+.ibtn.sm{width:34px;height:34px;border-radius:9px}
+#syncChip{display:flex;align-items:center;gap:5px;height:28px;padding:0 9px;border-radius:14px;font-size:12px;color:var(--fg2);background:rgba(255,255,255,.05);white-space:nowrap}
+#syncChip .dot{width:7px;height:7px;border-radius:50%;background:var(--fg3)}
+#syncChip.ok .dot{background:var(--green)} #syncChip.saving .dot{background:var(--yellow);animation:pulse 1s infinite} #syncChip.error .dot{background:var(--red)}
+@keyframes pulse{50%{opacity:.3}}
+#views{flex:1;min-height:0;display:flex;position:relative}
+.view{display:none;flex-direction:column;flex:1;min-width:0;min-height:0;position:relative}
+#app[data-view=code] #v-code,#app[data-view=out] #v-out{display:flex}
+#app[data-view=files] #v-side,#app[data-view=db] #v-side,#app[data-view=learn] #v-side,#app[data-view=settings] #v-side{display:flex}
+#app[data-view=code] #topbar .t-other,#app:not([data-view=code]) #topbar .t-code{display:none}
+
+/* Navegação inferior */
+#nav{flex:none;display:flex;background:var(--bg2);border-top:1px solid var(--line);padding:6px 4px calc(6px + var(--safe-b))}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px 0;color:var(--fg2);font-size:11.5px;font-weight:500;position:relative}
+.nb .pill{width:56px;height:32px;border-radius:16px;display:grid;place-items:center;transition:background .2s}
+.nb.on{color:#fff}
+.nb.on .pill{background:var(--accent-bg);color:var(--accent)}
+.nb .bdg{position:absolute;top:0;left:50%;margin-left:12px;min-width:16px;height:16px;border-radius:8px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:none;place-items:center;padding:0 4px}
+.nb .bdg.on{display:grid}
+.nb.settings{display:none}
+#statusbar{display:none}
+
+/* Abas de arquivos (chips no celular) */
+#tabs{flex:none;display:flex;gap:6px;overflow-x:auto;padding:6px 10px;scrollbar-width:none;background:var(--bg)}
+#tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:flex;align-items:center;gap:7px;height:32px;padding:0 6px 0 12px;border-radius:17px;background:var(--surface);color:var(--fg2);font-size:13.5px;font-weight:500;max-width:200px;border:1px solid transparent}
+.tab.on{background:var(--accent-bg);color:#fff;border-color:rgba(178,108,255,.45)}
+.tab .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab .x{width:24px;height:24px;display:grid;place-items:center;border-radius:12px;color:var(--fg2)}
+.tab .x:active{background:rgba(255,255,255,.12)}
+#crumbs{display:none}
+#editor{flex:1;min-height:0;position:relative;background:var(--bg)}
+#editor .CodeMirror{position:absolute;inset:0;height:auto}
+#empty{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--fg2);text-align:center;padding:24px}
+#empty.on{display:flex}
+#empty .ill{width:84px;height:84px;border-radius:24px;background:var(--surface);display:grid;place-items:center;color:var(--accent)}
+#empty h3{margin:0;color:var(--fg);font-size:18px}
+#empty .row2{display:flex;gap:10px}
+
+/* Botão executar flutuante */
+#runbtn{position:absolute;right:16px;bottom:16px;z-index:8;height:56px;padding:0 22px 0 18px;border-radius:28px;display:flex;align-items:center;gap:10px;color:#fff;font-size:16px;font-weight:700;background:linear-gradient(135deg,#a855f7,#ec4899);box-shadow:0 8px 26px rgba(236,72,153,.4),0 2px 6px rgba(0,0,0,.5);transition:transform .12s}
+#runbtn:active{transform:scale(.96)}
+#runbtn .spin{display:none}
+#runbtn.busy{background:#4a4a4a;box-shadow:none}
+#runbtn.busy .spin{display:block;animation:spin 1s linear infinite}
+#runbtn.busy .play{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Barra de símbolos (acima do teclado) */
+#keybar{flex:none;display:none;gap:6px;padding:7px 8px;background:#1b1724;border-top:1px solid var(--line2);overflow-x:auto;scrollbar-width:none}
+#keybar::-webkit-scrollbar{display:none}
+body.touch.edfocus #keybar.enabled{display:flex}
+#keybar button{flex:none;min-width:40px;height:40px;padding:0 10px;border-radius:10px;background:#2e2740;color:#f0f0f0;font-family:var(--mono);font-size:17px;box-shadow:0 1px 0 rgba(0,0,0,.4)}
+#keybar button:active{background:var(--accent)}
+#keybar button.w{font-family:var(--ui);font-size:14px;font-weight:600}
+#keybar button.go{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff}
+
+/* Saída */
+#outhead{flex:none;display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--bg)}
+.seg{display:flex;background:var(--surface);border-radius:12px;padding:3px;gap:2px;flex:1 1 auto;min-width:0}
+#outhead .grow{flex:0}
+.seg button{flex:1;min-width:0;height:38px;border-radius:9px;font-size:13.5px;padding:0 4px;font-weight:600;color:var(--fg2);display:flex;align-items:center;justify-content:center;gap:6px}
+.seg button.on{background:var(--surface3);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.seg .bdg{background:var(--accent);color:#fff;border-radius:9px;font-size:10.5px;padding:0 6px;line-height:17px}
+#outhead .deskonly{display:none}
+.pbody{flex:1;min-height:0;overflow:auto;display:none;-webkit-overflow-scrolling:touch}
+.pbody.on{display:block}
+#term{font-family:var(--mono);font-size:13px;line-height:1.6;padding:6px 14px 14px;white-space:pre;color:#d4d4d4}
+#term .ln{min-height:1.6em}
+#term .err{color:var(--red)} #term .info{color:#6cb6ff} #term .dim{color:var(--fg3)} #term .ok{color:var(--green)} #term .in{color:#ce9178}
+#term .cmd{color:#dcdcaa;margin-top:8px} #term .cmd::before{content:"❯ ";color:var(--green)}
+#term img{max-width:100%;background:#fff;border-radius:10px;margin:8px 0;display:block}
+#term .html{white-space:normal;margin:6px 0;overflow-x:auto}
+#term .html table{border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+#term .html table td,#term .html table th{border:1px solid #3a3a3a;padding:4px 9px;text-align:right;white-space:nowrap}
+#term .html table th{background:#2a2a2a;color:#e0e0e0}
+#results{padding:6px 10px 16px}
+.rblock{margin-bottom:14px;border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:var(--bg)}
+.rhead{display:flex;align-items:center;gap:6px;padding:8px 6px 8px 12px;background:var(--surface);font-size:12.5px;color:var(--fg2)}
+.rhead .q{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);color:#dcdcaa;font-size:12px}
+.rhead .n{white-space:nowrap;font-weight:600;color:var(--fg)}
+.rhead .ibtn{width:34px;height:34px;color:var(--fg2)}
+.rwrap{overflow:auto;max-height:65vh}
+.rtable{border-collapse:collapse;font-family:var(--mono);font-size:12.5px;width:max-content;min-width:100%}
+.rtable th{position:sticky;top:0;background:#2a2436;color:#f0f0f0;font-weight:600;text-align:left;padding:8px 12px;border-bottom:1px solid #444;white-space:nowrap;z-index:1}
+.rtable td{padding:7px 12px;border-bottom:1px solid #2a2a2a;white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis;color:#d4d4d4}
+.rtable tr:nth-child(even) td{background:#1a1622}
+.rtable td.num{color:#b5cea8;text-align:right}
+.rtable td.null{color:#6e6e6e;font-style:italic}
+.rtable .rn{color:#6e6e6e;text-align:right;background:#120f17 !important;position:sticky;left:0}
+.rtable th.rn{z-index:2;background:#2a2436 !important}
+.rmsg{padding:10px 12px;font-family:var(--mono);font-size:13px}
+.rmsg.ok{color:var(--green)} .rmsg.err{color:var(--red);white-space:pre-wrap}
+.rempty{padding:40px 20px;color:var(--fg3);text-align:center;font-size:14px;line-height:1.6}
+#stdinwrap{padding:12px 14px;display:flex;flex-direction:column;gap:10px;height:100%}
+#stdinwrap p{margin:0;color:var(--fg2);font-size:13.5px;line-height:1.5}
+#stdin{flex:1;min-height:120px;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:12px;font-family:var(--mono);font-size:16px;resize:none;outline:none}
+#stdin:focus{border-color:var(--accent)}
+#repl{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--line);background:var(--bg2)}
+#repl .lang{height:36px;min-width:46px;padding:0 10px;border-radius:10px;background:var(--surface);font-family:var(--mono);font-size:12px;font-weight:700;color:#5aa9ff;flex:none}
+#repl .lang.sql{color:#f0a030}
+#replin{flex:1;min-width:0;height:40px;padding:0 12px;border-radius:12px;background:var(--surface);border:1px solid transparent;outline:none;font-family:var(--mono);font-size:16px;color:#f0f0f0}
+#replin:focus{border-color:var(--accent)}
+#replin::placeholder{color:#666}
+#replgo{width:40px;height:40px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none}
+
+/* Painéis laterais (Arquivos, Banco, Aprender, Ajustes) */
+#v-side{background:var(--bg)}
+.pane{display:none;flex-direction:column;min-height:0;flex:1}
+#app[data-side=files] #pane-files,#app[data-side=db] #pane-db,#app[data-side=learn] #pane-learn,#app[data-side=settings] #pane-settings{display:flex}
+.pane-h{flex:none;display:flex;align-items:center;gap:4px;padding:10px 8px 6px 16px}
+.pane-h .t{flex:1;font-size:13px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:.06em}
+.pane-b{flex:1;overflow:auto;padding:0 10px 24px;-webkit-overflow-scrolling:touch}
+.actrow{display:flex;gap:8px;padding:4px 6px 10px}
+.chipbtn{display:flex;align-items:center;gap:7px;height:40px;padding:0 14px;border-radius:12px;background:var(--surface);font-size:14px;font-weight:600;color:var(--fg)}
+.chipbtn:active{background:var(--surface3)}
+.chipbtn.primary{background:var(--accent);color:#fff}
+.sec{display:flex;align-items:center;gap:4px;height:34px;padding:0 6px;margin-top:6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg2);cursor:pointer;user-select:none}
+.sec .chev{transition:transform .15s}
+.sec.closed .chev{transform:rotate(-90deg)}
+.sec .cnt{margin-left:4px;color:var(--fg3);font-weight:500}
+.row{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 4px 0 12px;border-radius:12px;cursor:pointer;color:var(--fg);white-space:nowrap}
+.row:active{background:var(--surface)}
+.row.on{background:var(--accent-bg)}
+.row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;font-size:15px;font-weight:500}
+.row .sub{display:block;font-size:12px;color:var(--fg3);font-weight:400;margin-top:2px}
+.row .meta{color:var(--fg3);font-size:12.5px;font-family:var(--mono)}
+.row .more{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;color:var(--fg2)}
+.row .more:active{background:rgba(255,255,255,.1)}
+.row.col{min-height:34px;padding-left:52px;font-family:var(--mono);font-size:13px;cursor:default;gap:8px}
+.row.col .nm{font-size:13px}
+.row.col .ty{color:#4ec9b0;font-size:11.5px}
+.row.col .pk{color:var(--yellow);font-size:11px}
+.fbadge{width:36px;height:36px;flex:none;border-radius:10px;display:grid;place-items:center;font-family:var(--mono);font-size:10.5px;font-weight:700}
+.fbadge.py{background:rgba(75,139,190,.18);color:#6cb6ff}.fbadge.sql{background:rgba(227,140,0,.16);color:#f0a030}.fbadge.csv{background:rgba(126,231,135,.13);color:var(--green)}.fbadge.txt,.fbadge.md,.fbadge.json{background:rgba(255,255,255,.07);color:var(--fg2)}
+.fbadge.tbl{background:rgba(178,108,255,.14);color:var(--accent)}.fbadge.vw{background:rgba(197,134,192,.15);color:var(--purple)}.fbadge.ix{background:rgba(227,179,65,.13);color:var(--yellow)}
+.fsm{width:20px;height:20px;border-radius:5px;font-size:8px}
+.exp{width:22px;display:grid;place-items:center;color:var(--fg3);transition:transform .15s}
+.exp.open{transform:rotate(90deg)}
+.card{margin:12px 6px;padding:14px;border-radius:14px;background:var(--surface);color:var(--fg2);font-size:13.5px;line-height:1.55}
+.card b{color:var(--fg)}
+.dbhead{display:flex;align-items:center;gap:12px;margin:4px 6px 8px;padding:14px;border-radius:16px;background:linear-gradient(135deg,rgba(178,108,255,.18),rgba(178,108,255,.05));border:1px solid rgba(178,108,255,.25)}
+.dbhead .ic{width:44px;height:44px;border-radius:12px;background:rgba(178,108,255,.2);display:grid;place-items:center;color:var(--accent)}
+.dbhead .n{font-size:16px;font-weight:700}
+.dbhead .s{font-size:12.5px;color:var(--fg2);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 6px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px;border-radius:14px;background:var(--surface);text-align:left;font-size:13.5px;font-weight:600;line-height:1.3}
+.tile:active{background:var(--surface3)}
+.tile svg{color:var(--accent)}
+.tile.danger svg{color:var(--red)}
+.snip{display:flex;align-items:center;gap:12px;padding:10px 8px 10px 12px;border-radius:12px;cursor:pointer}
+.snip:active{background:var(--surface)}
+.snip .st{font-size:15px;font-weight:600;color:var(--fg)}
+.snip .sd{font-size:12.5px;color:var(--fg2);margin-top:2px}
+.snip .go{margin-left:auto;color:var(--fg3)}
+.setting{display:flex;align-items:center;gap:12px;padding:14px 8px;border-bottom:1px solid var(--line)}
+.setting .lbl{flex:1;font-size:15px}
+.setting .desc{font-size:12.5px;color:var(--fg2);margin-top:3px}
+.switch{position:relative;width:50px;height:30px;flex:none}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch span{position:absolute;inset:0;border-radius:15px;background:#4a4a4e;transition:.2s}
+.switch span::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.switch input:checked+span{background:var(--accent)}
+.switch input:checked+span::after{transform:translateX(20px)}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:38px;height:38px;border-radius:10px;background:var(--surface);font-size:18px;font-weight:700}
+.stepper b{min-width:32px;text-align:center;font-size:15px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:12px;background:var(--accent);color:#fff;font-size:15px;font-weight:600}
+.btn.sec2{background:var(--surface2);color:#fff}
+.btn.danger{background:#6e2020}
+.btn.full{width:100%}
+
+.synccard{color:var(--fg)}
+.sc-row{display:flex;align-items:center;gap:10px;font-size:15px}
+.sc-dot{width:10px;height:10px;border-radius:50%;background:var(--fg3)}
+.sc-dot.ok{background:var(--green)}.sc-dot.syncing,.sc-dot.pending{background:var(--yellow)}.sc-dot.error,.sc-dot.offline{background:var(--red)}
+.sc-sub{margin:8px 0 10px;color:var(--fg2);font-size:13.5px;line-height:1.55}
+.sc-lbl{display:block;font-size:12.5px;color:var(--fg2);margin:10px 0 6px}
+.synccard input{width:100%;height:46px;padding:0 12px;border-radius:12px;background:#110e16;border:1px solid var(--line2);outline:none;font-family:var(--mono);font-size:16px}
+.synccard input:focus{border-color:var(--accent)}
+.sc-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sc-acts .btn{flex:1;white-space:nowrap;font-size:14.5px;padding:0 12px}
+.sc-help{margin-top:12px;font-size:13.5px;color:var(--fg2)}
+.sc-help summary{color:var(--accent);cursor:pointer;font-weight:600}
+.sc-help ol{padding-left:20px;line-height:1.6}
+#syncChip{cursor:pointer}
+/* Sheets, diálogos, toast */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+#overlay.on{display:flex}
+.sheet{width:100%;max-width:480px;background:#1d1826;border-radius:20px 20px 0 0;padding:8px 0 calc(12px + var(--safe-b));box-shadow:0 -10px 40px rgba(0,0,0,.5);animation:up .2s ease;max-height:85vh;overflow:auto}
+.sheet::before{content:"";display:block;width:40px;height:5px;border-radius:3px;background:#555;margin:2px auto 8px}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet .sh-t{padding:4px 20px 12px;display:flex;align-items:center;gap:12px;font-weight:700;font-size:16px;border-bottom:1px solid var(--line)}
+.sheet .mi{display:flex;align-items:center;gap:16px;width:100%;padding:15px 20px;font-size:16px;text-align:left}
+.sheet .mi:active{background:var(--surface3)}
+.sheet .mi svg{color:var(--fg2)}
+.sheet .mi.danger,.sheet .mi.danger svg{color:var(--red)}
+.dlg{padding:6px 20px 8px}
+.dlg h3{margin:4px 0 8px;font-size:18px;font-weight:700}
+.dlg p{margin:0 0 14px;color:var(--fg2);font-size:14.5px;line-height:1.5}
+.dlg input[type=text]{width:100%;height:48px;padding:0 14px;background:#110e16;border:1px solid var(--line2);border-radius:12px;outline:none;font-family:var(--mono);font-size:16px}
+.dlg input[type=text]:focus{border-color:var(--accent)}
+.dlg .er{color:var(--red);font-size:13px;min-height:20px;margin-top:6px}
+.dlg .acts{display:flex;gap:10px;margin-top:6px}
+.dlg .acts .btn{flex:1}
+#toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%) translateY(20px);background:#3b2f52;color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:200;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,.5);text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%)}
+#toast.err{background:#7a2626}
+#loading{position:fixed;inset:0;background:var(--bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:300;transition:opacity .3s}
+#loading.hide{opacity:0;pointer-events:none}
+#loading .ill{width:72px;height:72px;border-radius:20px;background:var(--surface);display:grid;place-items:center;color:var(--accent)}
+#loading p{margin:0;color:var(--fg2);font-size:14px}
+
+
+/* =============== Computador: layout estilo VS Code =============== */
+@media (min-width: 900px){
+  html,body{font-size:13px}
+  #app{display:grid;grid-template-columns:52px var(--side-w) minmax(0,1fr);grid-template-rows:36px minmax(0,1fr) var(--out-h) 24px;grid-template-areas:"top top top" "nav side code" "nav side out" "stat stat stat";padding-top:0}
+  #app.side-closed{grid-template-columns:52px 0 minmax(0,1fr)}
+  #app.side-closed #v-side{display:none !important}
+  #app.out-min{grid-template-rows:36px minmax(0,1fr) 44px 24px}
+  #app.out-min #v-out .pbody,#app.out-min #repl{display:none !important}
+  #views{display:contents}
+  #topbar{grid-area:top;height:36px;background:#0e0c12;border-bottom:1px solid #2a2435;padding:0 8px}
+  #topbar .brand{display:grid;width:28px;place-items:center}
+  #topbar .t-other{display:none !important}
+  #topbar .t-code{display:flex !important}
+  #fileChip{height:28px;background:transparent;font-weight:500;font-size:13px;margin:0 auto;max-width:50vw}
+  #fileChip .cv{display:none}
+  .ibtn{width:30px;height:30px;border-radius:6px}
+  #syncChip{height:22px;font-size:11.5px}
+  #nav{grid-area:nav;flex-direction:column;align-items:center;padding:6px 0;border-top:0;border-right:1px solid #2a2435;background:#0e0c12;gap:4px}
+  .nb{flex:none;width:52px;height:50px;justify-content:center}
+  .nb .lbl{display:none}
+  .nb .pill{width:40px;height:40px;border-radius:10px;background:none !important;color:#858585 !important}
+  .nb.on .pill{color:#d4a5ff !important}
+  .nb.on::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:linear-gradient(#a855f7,#ec4899)}
+  .nb.code,.nb.out{display:none}
+  .nb.settings{display:flex;margin-top:auto}
+  .nb .bdg{display:none !important}
+  #v-side{grid-area:side;display:flex !important;background:#18141f;border-right:1px solid #2a2435}
+  #v-code{grid-area:code;display:flex !important}
+  #v-out{grid-area:out;display:flex !important;border-top:1px solid var(--line2)}
+  .pane-b{padding:0 4px 20px}
+  .row{min-height:30px;border-radius:4px;gap:8px;padding:0 4px 0 10px}
+  .row .nm{font-size:13px}
+  .row .sub{display:none}
+  .row .more{width:26px;height:26px;opacity:0}
+  .row:hover{background:#231d2e}.row:hover .more,.row.on .more{opacity:1}
+  .row.on{background:#2f2640}
+  .row.col{min-height:24px;padding-left:46px;font-size:12px}
+  .fbadge{width:20px;height:20px;border-radius:5px;font-size:8px}
+  .dbhead{padding:10px}.dbhead .ic{width:34px;height:34px}.dbhead .n{font-size:14px}
+  .tile{padding:10px;font-size:12.5px;border-radius:8px}
+  .card{font-size:12.5px;padding:12px;border-radius:8px}
+  .snip{padding:6px 8px;border-radius:6px}.snip:hover{background:#231d2e}.snip .st{font-size:13px}.snip .sd{font-size:11.5px}
+  .chipbtn{height:30px;font-size:12.5px;border-radius:6px;padding:0 10px}
+  .setting .lbl{font-size:13px}
+  #tabs{padding:0;gap:0;background:#18141f;border-bottom:1px solid #2a2435;flex:none;padding-right:130px}
+  .tab{height:35px;border-radius:0;background:#1d1826;border:0;border-right:1px solid #18141f;font-size:12.5px;padding:0 6px 0 12px}
+  .tab.on{background:var(--bg);color:#fff;box-shadow:inset 0 1px 0 var(--accent)}
+  .tab .x{width:22px;height:22px;border-radius:4px}
+  #crumbs{display:flex;align-items:center;gap:6px;height:22px;flex:none;padding:0 14px;font-size:12px;color:var(--fg2)}
+  #runbtn{top:3px;bottom:auto;right:8px;height:29px;border-radius:6px;font-size:12.5px;padding:0 12px 0 10px;gap:6px;box-shadow:none}
+  #runbtn svg{width:13px;height:13px}
+  #outhead{padding:4px 8px;border-bottom:0}
+  .seg{background:none;padding:0;max-width:none;flex:none}
+  .seg button{flex:none;height:30px;padding:0 10px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-radius:0;background:none !important;box-shadow:none !important;color:#969696}
+  .seg button.on{color:#e7e7e7;box-shadow:inset 0 -1px 0 #e7e7e7 !important}
+  #outhead .deskonly{display:grid}
+  #outhead .grow{flex:1}
+  #repl{padding:4px 8px}
+  #repl .lang{height:26px}#replin{height:30px;font-size:13px}#replgo{width:30px;height:30px;border-radius:6px}
+  #sash{position:absolute;left:0;right:0;top:-4px;height:8px;cursor:ns-resize;z-index:5}
+  #sash:hover{background:var(--accent)}
+  #statusbar{grid-area:stat;display:flex;align-items:center;background:linear-gradient(90deg,#7c3aed,#db2777);color:#fff;font-size:12px;padding:0 8px;gap:14px;white-space:nowrap}
+  #overlay{align-items:center}
+  .sheet{border-radius:12px;max-width:420px;padding-bottom:10px}
+  .sheet::before{display:none}
+  .sheet .mi{padding:10px 18px;font-size:14px}
+  #toast{bottom:40px}
+  #term{font-size:calc(var(--fs) - 1px)}
+}
+@media (max-width: 899px){ #sash{display:none} }
+
+/* =============== Editor: tema Dark+ =============== */
+.cm-s-vsdark.CodeMirror{background:var(--bg);color:#d4d4d4;font-family:var(--mono);font-size:var(--fs);line-height:1.65}
+.cm-s-vsdark .CodeMirror-gutters{background:var(--bg);border-right:0}
+.cm-s-vsdark .CodeMirror-linenumber{color:#5a5f66;padding:0 8px 0 4px;font-size:calc(var(--fs) - 2px)}
+.cm-s-vsdark .CodeMirror-activeline-gutter .CodeMirror-linenumber{color:#c6c6c6}
+.cm-s-vsdark .CodeMirror-activeline-background{background:#1f1a28}
+.cm-s-vsdark .CodeMirror-cursor{border-left:2px solid #aeafad}
+.cm-s-vsdark div.CodeMirror-selected,.cm-s-vsdark.CodeMirror-focused div.CodeMirror-selected{background:#264f78}
+.cm-s-vsdark .CodeMirror-line::selection,.cm-s-vsdark .CodeMirror-line>span::selection,.cm-s-vsdark .CodeMirror-line>span>span::selection{background:#264f78}
+.cm-s-vsdark .CodeMirror-matchingbracket{color:inherit !important;outline:1px solid #888}
+.cm-s-vsdark .cm-keyword{color:#569cd6}
+.cm-s-vsdark.py .cm-keyword{color:#c586c0}
+.cm-s-vsdark .cm-def{color:#dcdcaa}
+.cm-s-vsdark .cm-variable,.cm-s-vsdark .cm-variable-2{color:#9cdcfe}
+.cm-s-vsdark .cm-variable-3,.cm-s-vsdark .cm-type,.cm-s-vsdark .cm-builtin{color:#4ec9b0}
+.cm-s-vsdark .cm-property{color:#dcdcaa}
+.cm-s-vsdark .cm-string,.cm-s-vsdark .cm-string-2{color:#ce9178}
+.cm-s-vsdark .cm-number{color:#b5cea8}
+.cm-s-vsdark .cm-comment{color:#6a9955;font-style:italic}
+.cm-s-vsdark .cm-operator{color:#d4d4d4}
+.cm-s-vsdark .cm-atom{color:#569cd6}
+.cm-s-vsdark .cm-meta{color:#dcdcaa}
+.cm-s-vsdark .cm-bracket{color:#ffd700}
+.cm-s-vsdark .cm-error{color:#f44747}
+.cm-s-vsdark .CodeMirror-scroll{padding-bottom:90px;overscroll-behavior:contain}
+.cm-s-vsdark .CodeMirror-wrap pre.CodeMirror-line{word-break:break-word}
+.cm-errline{background:rgba(244,71,71,.2) !important}
+.CodeMirror-hints{background:#211c2b;border:1px solid #454545;box-shadow:0 8px 24px rgba(0,0,0,.5);border-radius:10px;font-family:var(--mono);font-size:14px;max-height:14em;padding:4px;z-index:90}
+.CodeMirror-hint{color:#d4d4d4;padding:7px 10px;border-radius:6px}
+li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:rgba(121,121,121,.35);border-radius:5px}
+::-webkit-scrollbar-track{background:transparent}
+</style>
+<script src="vendor/cm.min.js"></script>
+<script src="vendor/sql-wasm.js"></script>
+<script>
+(function(){ const of = window.fetch.bind(window);
+  window.fetch = function(input, init){
+    try { const u = (typeof Request !== 'undefined' && input instanceof Request) ? input.url : String(input);
+      if (/\/py\/[^?#]+\.zip(\?|#|$)/.test(u)) { return of(u.replace(/\.zip(?=(\?|#|$))/, '.zip.wasm'), init); } } catch (e) {}
+    return of(input, init); };
+})();
+</script>
+<script defer src="py/pyodide.js"></script>
+</head>
+<body>
+<div id="loading"><div class="ill"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="url(#lgb)" stroke-width="2" stroke-linecap="round"><defs><linearGradient id="lgb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a855f7"/><stop offset="1" stop-color="#ec4899"/></linearGradient></defs><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 3v3M14.5 3v3M9.5 18v3M14.5 18v3M3 9.5h3M3 14.5h3M18 9.5h3M18 14.5h3"/><path d="M13.6 9.6a3 3 0 1 0 .8 4.4 2.4 2.4 0 0 1-.8-4.4z" fill="url(#lgb)" stroke="none"/></svg></div><p>Abrindo o Luna Studio…</p></div>
+<div id="app" data-view="code" data-side="files">
+  <header id="topbar">
+    <div class="brand"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#lga)" stroke-width="2" stroke-linecap="round"><defs><linearGradient id="lga" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a855f7"/><stop offset="1" stop-color="#ec4899"/></linearGradient></defs><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 3v3M14.5 3v3M9.5 18v3M14.5 18v3M3 9.5h3M3 14.5h3M18 9.5h3M18 14.5h3"/><path d="M13.6 9.6a3 3 0 1 0 .8 4.4 2.4 2.4 0 0 1-.8-4.4z" fill="url(#lga)" stroke="none"/></svg></div>
+    <div class="t-code tc-wrap">
+      <button id="fileChip"><span id="fcIcon"></span><span class="nm" id="fcName">Luna Studio</span><svg class="cv" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5 5 5-5"/></svg></button>
+    </div>
+    <div class="t-other grow" style="min-width:0"><div id="vtitle"></div></div>
+    <div id="syncChip"><span class="dot"></span><span id="syncTxt">Local</span></div>
+    <button class="ibtn t-code" id="undoBtn" title="Desfazer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+    <button class="ibtn" id="moreBtn" title="Mais"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+  </header>
+
+  <div id="views">
+    <!-- ================= Painéis laterais ================= -->
+    <section class="view" id="v-side">
+      <div class="pane" id="pane-files">
+        <div class="pane-h"><span class="t">Arquivos do projeto</span></div>
+        <div class="actrow">
+          <button class="chipbtn primary" id="newPy"><span class="fbadge py fsm" style="background:rgba(255,255,255,.2);color:#fff">PY</span>Novo Python</button>
+          <button class="chipbtn" id="newSql"><span class="fbadge sql fsm">SQL</span>Novo SQL</button>
+          <button class="chipbtn" id="upload" title="Importar arquivo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></button>
+        </div>
+        <div class="pane-b">
+          <div id="filelist"></div>
+          <div class="card">💡 Tudo é salvo automaticamente. No Python, use <b>sqlite3.connect("banco.db")</b> para acessar o mesmo banco das consultas SQL.</div>
+        </div>
+      </div>
+      <div class="pane" id="pane-db">
+        <div class="pane-h"><span class="t">Banco de dados</span>
+          <button class="ibtn sm" id="dbRefresh" title="Atualizar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+        </div>
+        <div class="pane-b">
+          <div class="dbhead"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-13"/><path d="M4.5 12c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8"/></svg></div><div><div class="n">banco.db</div><div class="s" id="dbSize">—</div></div></div>
+          <div class="grid2">
+            <button class="tile" id="dbNewQuery"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nova consulta</button>
+            <button class="tile" id="dbImportDb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Abrir meu banco (.db)</button>
+            <button class="tile" id="dbImportCsv"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>Importar CSV</button>
+            <button class="tile" id="dbExport"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Exportar projeto</button>
+          </div>
+          <div id="dbtree"></div>
+          <div class="grid2" style="margin-top:8px"><button class="tile" id="dbSample"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>Restaurar banco de exemplo</button></div>
+          <div class="card">Toque numa tabela para ver os dados. Use <b>⋮</b> para gerar um SELECT, ver a estrutura ou exportar em CSV.</div>
+        </div>
+      </div>
+      <div class="pane" id="pane-learn">
+        <div class="pane-h"><span class="t">Exemplos para estudar</span></div>
+        <div class="pane-b" id="learnlist"></div>
+      </div>
+      <div class="pane" id="pane-settings">
+        <div class="pane-h"><span class="t">Ajustes</span></div>
+        <div class="pane-b">
+          <div class="setting"><div class="lbl">Tamanho da fonte</div><div class="stepper"><button id="fsMinus">−</button><b id="fsVal">14</b><button id="fsPlus">+</button></div></div>
+          <div class="setting"><div class="lbl">Autocompletar ao digitar<div class="desc">Sugestões de comandos e nomes de tabelas</div></div><label class="switch"><input type="checkbox" id="setAc"><span></span></label></div>
+          <div class="setting"><div class="lbl">Quebrar linhas longas</div><label class="switch"><input type="checkbox" id="setWrap"><span></span></label></div>
+          <div class="setting"><div class="lbl">Barra de símbolos<div class="desc">Tab, ( ) : = " etc. acima do teclado</div></div><label class="switch"><input type="checkbox" id="setKeys"><span></span></label></div>
+          <div class="pane-h" style="padding-left:6px"><span class="t">Sincronização</span></div><div class="card synccard" id="syncCard"></div>
+          <div class="card"><b>Instalar como app:</b><br>• iPhone/iPad: no Safari, toque em <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>.<br>• Android: no Chrome, <b>⋮</b> → <b>Instalar app</b>.<br>• Computador: no Chrome/Edge, ícone de instalar na barra de endereço.</div>
+          <div class="card" style="font-size:12.5px">Atalhos no computador: <b>Ctrl+Enter</b> executar · <b>Ctrl+/</b> comentar · <b>Ctrl+Espaço</b> sugestões</div>
+          <div style="padding:8px 6px"><button class="btn danger full" id="resetAll">Apagar tudo e recomeçar</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Editor ================= -->
+    <section class="view" id="v-code">
+      <div id="tabs"></div>
+      <div id="crumbs"></div>
+      <div id="editor">
+        <div id="empty">
+          <div class="ill"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7l-5 5 5 5"/><path d="M16 7l5 5-5 5"/></svg></div>
+          <h3>Nenhum arquivo aberto</h3>
+          <div class="row2"><button class="btn" id="emptyPy">Novo Python</button><button class="btn sec2" id="emptySql">Novo SQL</button></div>
+        </div>
+      </div>
+      <button id="runbtn" title="Executar (Ctrl+Enter)">
+        <svg class="play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>
+        <svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 12a9 9 0 1 1-6.2-8.6"/></svg>
+        <span id="runlbl">Executar</span>
+      </button>
+      <div id="keybar"></div>
+    </section>
+
+    <!-- ================= Saída ================= -->
+    <section class="view" id="v-out">
+      <div id="sash"></div>
+      <div id="outhead">
+        <div class="seg">
+          <button data-ptab="term" class="on">Terminal</button>
+          <button data-ptab="results">Resultados <span class="bdg" id="resBadge" style="display:none"></span></button>
+          <button data-ptab="stdin">Entrada</button>
+        </div>
+        <div class="grow"></div>
+        <button class="ibtn sm" id="pClear" title="Limpar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg></button>
+        <button class="ibtn sm deskonly" id="pToggle" title="Minimizar/maximizar painel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      </div>
+      <div class="pbody on" id="pb-term"><div id="term"></div></div>
+      <div class="pbody" id="pb-results"><div id="results"><div class="rempty">Execute um arquivo <b>.sql</b> ou toque numa tabela<br>no Banco para ver os resultados aqui.</div></div></div>
+      <div class="pbody" id="pb-stdin"><div id="stdinwrap"><p>Se o seu programa usa <b>input()</b>, escreva aqui as respostas, <b>uma por linha</b>, antes de executar.</p><textarea id="stdin" spellcheck="false" placeholder="Maria&#10;25"></textarea></div></div>
+      <div id="repl">
+        <button class="lang" id="replLang">PY</button>
+        <input id="replin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Comando Python…">
+        <button id="replgo" title="Executar comando"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg></button>
+      </div>
+    </section>
+  </div>
+
+  <nav id="nav">
+    <button class="nb code" data-v="code"><span class="pill"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5"/><path d="M16 7l5 5-5 5"/></svg></span><span class="lbl">Código</span></button>
+    <button class="nb" data-v="files" title="Arquivos"><span class="pill"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v12A1.5 1.5 0 0 0 7 18h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3v4.5h4.5"/><path d="M5.5 6.5H4.5A1.5 1.5 0 0 0 3 8v12a1.5 1.5 0 0 0 1.5 1.5H14"/></svg></span><span class="lbl">Arquivos</span></button>
+    <button class="nb" data-v="db" title="Banco de dados"><span class="pill"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-13"/><path d="M4.5 12c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8"/></svg></span><span class="lbl">Banco</span></button>
+    <button class="nb out" data-v="out"><span class="pill"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span><span class="lbl">Saída</span><span class="bdg" id="outBadge"></span></button>
+    <button class="nb" data-v="learn" title="Exemplos"><span class="pill"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg></span><span class="lbl">Aprender</span></button>
+    <button class="nb settings" data-v="settings" title="Ajustes"><span class="pill"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="lbl">Ajustes</span></button>
+  </nav>
+
+  <footer id="statusbar"><span id="sbSync"></span><span id="sbDb"></span><span class="grow"></span><span id="sbPos"></span><span>Espaços: 4</span><span id="sbPy"></span><span id="sbLang"></span></footer>
+</div>
+
+<div id="overlay"></div>
+<div id="toast"></div>
+<input type="file" id="fileIn" style="display:none">
+
+<script>
+"use strict";
+/* =====================================================================
+   Luna Studio — Python + SQL no navegador (celular e computador)
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const qi = n => '"' + String(n).replace(/"/g, '""') + '"';
+const uid = () => 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const extOf = n => (String(n).match(/\.([a-z0-9]+)$/i) || [,''])[1].toLowerCase();
+const TEXT_EXT = ['py','sql','csv','txt','json','md'];
+const isTouch = matchMedia('(hover: none), (pointer: coarse)').matches;
+const isDesk = () => matchMedia('(min-width: 900px)').matches;
+const body = document.body;
+const appEl = $('#app');
+if (isTouch) body.classList.add('touch');
+const assetURL = p => new URL(p, location.href).href;
+
+// Bloqueia zoom por gesto (iOS) e duplo toque
+['gesturestart','gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive:false }));
+document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive:false });
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => { const now = Date.now(); if (now - lastTouchEnd < 300 && !e.target.closest('.CodeMirror')) e.preventDefault(); lastTouchEnd = now; }, { passive:false });
+
+/* ---------------- Ícones ---------------- */
+const IC = {
+  x:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  more:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>',
+  chev:'<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10l5 5 5-5"/></svg>',
+  chevR:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg>',
+  copy:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg>',
+  down:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>',
+  edit:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  dup:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg>',
+  trash:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg>',
+  play:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>',
+  eye:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  code:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>',
+  db:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-13"/></svg>',
+  wand:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>',
+  hash:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 4L5 20M15 4l-4 16M4 9h16M3 15h16"/></svg>',
+  gear:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  redo:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>',
+};
+const BADGE = { py:'PY', sql:'SQL', csv:'CSV', json:'{ }', md:'MD', txt:'TXT' };
+const fbadge = (n, sm=false) => { const e = extOf(n); return `<span class="fbadge ${BADGE[e]?e:'txt'} ${sm?'fsm':''}">${BADGE[e]||'TXT'}</span>`; };
+
+/* ---------------- Estado ---------------- */
+const LS_KEY = 'codestudio:v1';
+const DEFAULT_SETTINGS = { autocomplete: true, keybar: true };
+// Ajustes do aparelho (não sincronizam): fonte e quebra de linha
+const DEV_KEY = 'codestudio:device';
+function lsGet0(k){ try { return localStorage.getItem(k); } catch { return null; } }
+const dev = Object.assign({ fontSize: isTouch ? 16 : 14, wrap: isTouch }, (() => { try { return JSON.parse(lsGet0(DEV_KEY)) || {}; } catch { return {}; } })());
+if (isTouch && dev.fontSize < 16) dev.fontSize = 16;
+const saveDev = () => { try { localStorage.setItem(DEV_KEY, JSON.stringify(dev)); } catch {} };
+const state = { files: [], open: [], active: null, deleted: [], deletedPaths: [], settings: {...DEFAULT_SETTINGS}, wsUpdated: 0, dbUpdated: 0 };
+const docs = new Map();
+
+function lsGet(k){ try { return localStorage.getItem(k); } catch { return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k,v); return true; } catch { return false; } }
+const idb = {
+  _p:null,
+  open(){ if(!this._p) this._p = new Promise((res,rej)=>{ try{ const r = indexedDB.open('code-studio',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);}catch(e){rej(e);} }); return this._p; },
+  async get(k){ try{ const d = await this.open(); return await new Promise((res,rej)=>{ const q=d.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }catch{ return undefined; } },
+  async set(k,v){ try{ const d = await this.open(); await new Promise((res,rej)=>{ const tx=d.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }catch{} },
+};
+
+/* ---------------- Conteúdo inicial ---------------- */
+const DEFAULT_FILES = () => [
+ { id:'main_py', name:'main.py', updated:0, content:
+`# Bem-vinda ao Luna Studio! 🌙
+# Toque em ▶ Executar para rodar.
+
+import sqlite3
+
+# "banco.db" é o MESMO banco que você consulta nos arquivos .sql
+con = sqlite3.connect("banco.db")
+cur = con.cursor()
+
+cur.execute("""
+    SELECT c.nome, COUNT(p.id) AS total_pedidos
+    FROM clientes c
+    LEFT JOIN pedidos p ON p.cliente_id = c.id
+    GROUP BY c.id
+    ORDER BY total_pedidos DESC
+    LIMIT 5
+""")
+
+print("Top 5 clientes por número de pedidos:\\n")
+for nome, total in cur.fetchall():
+    print(f"  {nome:<22} {total:>3} pedidos")
+
+con.close()
+` },
+ { id:'consultas_sql', name:'consultas.sql', updated:0, content:
+`-- Toque em ▶ Executar para rodar as consultas.
+-- Dica: selecione um trecho para executar só ele.
+
+-- 1) Alguns clientes
+SELECT * FROM clientes LIMIT 10;
+
+-- 2) Faturamento por categoria
+SELECT pr.categoria,
+       COUNT(DISTINCT i.pedido_id) AS pedidos,
+       ROUND(SUM(i.quantidade * i.preco_unitario), 2) AS faturamento
+FROM itens_pedido i
+JOIN produtos pr ON pr.id = i.produto_id
+GROUP BY pr.categoria
+ORDER BY faturamento DESC;
+` },
+];
+function sampleSQL(){
+  let seed = 42; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const pick = a => a[Math.floor(rnd()*a.length)];
+  const nomes = ['Ana','Bruno','Carla','Daniel','Eduarda','Felipe','Gabriela','Henrique','Isabela','João','Karina','Lucas','Mariana','Nicolas','Olívia','Pedro','Rafaela','Samuel','Tatiane','Vinícius','Yasmin','Rodrigo','Letícia','Marcos','Juliana','Thiago','Beatriz','André','Camila','Diego'];
+  const sobren = ['Silva','Souza','Oliveira','Santos','Pereira','Lima','Costa','Ferreira','Almeida','Ribeiro','Carvalho','Gomes','Martins','Rocha','Barbosa'];
+  const cidades = [['Brasília','DF'],['São Paulo','SP'],['Campinas','SP'],['Rio de Janeiro','RJ'],['Belo Horizonte','MG'],['Goiânia','GO'],['Salvador','BA'],['Curitiba','PR'],['Porto Alegre','RS'],['Recife','PE']];
+  const prods = [['Notebook Pro 14','Informática',4899.9],['Mouse sem fio','Informática',89.9],['Teclado mecânico','Informática',349],['Monitor 27"','Informática',1299],['Headset USB','Informática',219.5],['Smartphone X','Celulares',2499],['Capa de celular','Celulares',39.9],['Carregador rápido','Celulares',119],['Fone Bluetooth','Áudio',299],['Caixa de som','Áudio',459],['Cadeira ergonômica','Móveis',1590],['Mesa de escritório','Móveis',899],['Luminária LED','Móveis',129],['Caderno universitário','Papelaria',24.9],['Caneta gel (kit)','Papelaria',19.9],['Agenda 2026','Papelaria',49.9],['Livro: SQL do zero','Livros',79.9],['Livro: Python fluente','Livros',189],['Livro: Estatística básica','Livros',95],['Mochila notebook','Acessórios',199]];
+  const status = ['entregue','entregue','entregue','enviado','pago','cancelado'];
+  const d2 = n => String(n).padStart(2,'0');
+  const s = q => "'" + String(q).replace(/'/g,"''") + "'";
+  let out = `PRAGMA foreign_keys = ON;
+CREATE TABLE clientes (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  email TEXT UNIQUE,
+  cidade TEXT,
+  estado TEXT,
+  data_cadastro TEXT
+);
+CREATE TABLE produtos (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  categoria TEXT,
+  preco REAL NOT NULL,
+  estoque INTEGER DEFAULT 0
+);
+CREATE TABLE pedidos (
+  id INTEGER PRIMARY KEY,
+  cliente_id INTEGER NOT NULL REFERENCES clientes(id),
+  data TEXT NOT NULL,
+  status TEXT
+);
+CREATE TABLE itens_pedido (
+  id INTEGER PRIMARY KEY,
+  pedido_id INTEGER NOT NULL REFERENCES pedidos(id),
+  produto_id INTEGER NOT NULL REFERENCES produtos(id),
+  quantidade INTEGER NOT NULL,
+  preco_unitario REAL NOT NULL
+);
+CREATE TABLE funcionarios (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL,
+  cargo TEXT,
+  departamento TEXT,
+  salario REAL,
+  gerente_id INTEGER REFERENCES funcionarios(id),
+  admissao TEXT
+);
+`;
+  const used = new Set();
+  for (let i=1;i<=30;i++){
+    let n; do { n = pick(nomes)+' '+pick(sobren); } while(used.has(n)); used.add(n);
+    const [c,uf] = pick(cidades);
+    const em = n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ /g,'.')+'@email.com';
+    out += `INSERT INTO clientes VALUES (${i},${s(n)},${s(em)},${s(c)},${s(uf)},'2024-${d2(1+Math.floor(rnd()*12))}-${d2(1+Math.floor(rnd()*28))}');\n`;
+  }
+  prods.forEach((p,i)=>{ out += `INSERT INTO produtos VALUES (${i+1},${s(p[0])},${s(p[1])},${p[2]},${Math.floor(rnd()*120)});\n`; });
+  let item = 1;
+  for (let i=1;i<=90;i++){
+    const cli = 1+Math.floor(rnd()*27);
+    out += `INSERT INTO pedidos VALUES (${i},${cli},'2025-${d2(1+Math.floor(rnd()*12))}-${d2(1+Math.floor(rnd()*28))}',${s(pick(status))});\n`;
+    const k = 1+Math.floor(rnd()*4); const usedp = new Set();
+    for (let j=0;j<k;j++){ let p; do { p = 1+Math.floor(rnd()*prods.length);} while(usedp.has(p)); usedp.add(p);
+      out += `INSERT INTO itens_pedido VALUES (${item++},${i},${p},${1+Math.floor(rnd()*3)},${prods[p-1][2]});\n`; }
+  }
+  const func = [[1,'Helena Duarte','Diretora','Diretoria',28000,null],[2,'Carlos Menezes','Gerente','Vendas',14500,1],[3,'Patrícia Nunes','Gerente','TI',16800,1],[4,'Rafael Torres','Vendedor','Vendas',4200,2],[5,'Aline Castro','Vendedora','Vendas',4600,2],[6,'Bruno Teixeira','Vendedor','Vendas',3900,2],[7,'Fernanda Luz','Desenvolvedora','TI',9800,3],[8,'Gustavo Prado','Desenvolvedor','TI',8700,3],[9,'Larissa Moura','Analista de Dados','TI',9100,3],[10,'Otávio Ramos','Gerente','Financeiro',13900,1],[11,'Sabrina Melo','Analista','Financeiro',6200,10],[12,'Igor Fontes','Assistente','Financeiro',3100,10]];
+  func.forEach(f=>{ out += `INSERT INTO funcionarios VALUES (${f[0]},${s(f[1])},${s(f[2])},${s(f[3])},${f[4]},${f[5]===null?'NULL':f[5]},'20${d2(15+Math.floor(rnd()*10))}-${d2(1+Math.floor(rnd()*12))}-01');\n`; });
+  out += `CREATE INDEX idx_pedidos_cliente ON pedidos(cliente_id);
+CREATE VIEW vw_vendas AS
+  SELECT p.id AS pedido, p.data, c.nome AS cliente, pr.nome AS produto, pr.categoria,
+         i.quantidade, i.preco_unitario, i.quantidade * i.preco_unitario AS total
+  FROM itens_pedido i
+  JOIN pedidos p   ON p.id = i.pedido_id
+  JOIN clientes c  ON c.id = p.cliente_id
+  JOIN produtos pr ON pr.id = i.produto_id;`;
+  return out;
+}
+
+/* ---------------- Exemplos ---------------- */
+const SNIPPETS = [
+ {g:'SQL'},
+ {t:'SELECT e WHERE', d:'Filtrar linhas', f:'filtro.sql', c:`-- Filtrar linhas com WHERE
+SELECT nome, cidade, estado
+FROM clientes
+WHERE estado = 'SP'
+ORDER BY nome;
+
+-- Vários critérios: AND / OR
+SELECT nome, preco
+FROM produtos
+WHERE categoria = 'Informática' AND preco < 500;`},
+ {t:'LIKE, IN e BETWEEN', d:'Padrões de texto e faixas', f:'like_in_between.sql', c:`-- Nomes que começam com "Livro"
+SELECT nome, preco FROM produtos WHERE nome LIKE 'Livro%';
+
+-- Lista de valores
+SELECT nome, estado FROM clientes WHERE estado IN ('DF', 'GO', 'MG');
+
+-- Faixa de valores
+SELECT nome, preco FROM produtos WHERE preco BETWEEN 100 AND 500 ORDER BY preco;`},
+ {t:'GROUP BY e HAVING', d:'Agregações: COUNT, SUM, AVG', f:'agregacoes.sql', c:`-- Quantos clientes por estado?
+SELECT estado, COUNT(*) AS clientes
+FROM clientes
+GROUP BY estado
+ORDER BY clientes DESC;
+
+-- Média salarial por departamento (só os com média > 5000)
+SELECT departamento,
+       COUNT(*)              AS pessoas,
+       ROUND(AVG(salario),2) AS media_salarial,
+       MAX(salario)          AS maior
+FROM funcionarios
+GROUP BY departamento
+HAVING AVG(salario) > 5000;`},
+ {t:'INNER JOIN', d:'Combinar tabelas', f:'join.sql', c:`-- Pedidos com o nome do cliente
+SELECT p.id AS pedido, p.data, c.nome AS cliente, p.status
+FROM pedidos p
+INNER JOIN clientes c ON c.id = p.cliente_id
+ORDER BY p.data DESC
+LIMIT 20;
+
+-- Três tabelas: itens + produto + pedido
+SELECT p.id AS pedido, pr.nome AS produto, i.quantidade,
+       i.quantidade * i.preco_unitario AS subtotal
+FROM itens_pedido i
+JOIN produtos pr ON pr.id = i.produto_id
+JOIN pedidos  p  ON p.id  = i.pedido_id
+WHERE p.status = 'entregue'
+LIMIT 20;`},
+ {t:'LEFT JOIN', d:'Quem nunca comprou?', f:'left_join.sql', c:`-- LEFT JOIN mantém todos os clientes, mesmo sem pedidos
+SELECT c.nome, COUNT(p.id) AS pedidos
+FROM clientes c
+LEFT JOIN pedidos p ON p.cliente_id = c.id
+GROUP BY c.id
+ORDER BY pedidos;
+
+-- Só os que NUNCA compraram
+SELECT c.nome
+FROM clientes c
+LEFT JOIN pedidos p ON p.cliente_id = c.id
+WHERE p.id IS NULL;`},
+ {t:'Subconsultas', d:'SELECT dentro de SELECT', f:'subconsulta.sql', c:`-- Produtos mais caros que a média
+SELECT nome, preco
+FROM produtos
+WHERE preco > (SELECT AVG(preco) FROM produtos)
+ORDER BY preco DESC;
+
+-- Clientes que compraram algum livro
+SELECT nome FROM clientes
+WHERE id IN (
+  SELECT p.cliente_id
+  FROM pedidos p
+  JOIN itens_pedido i ON i.pedido_id = p.id
+  JOIN produtos pr ON pr.id = i.produto_id
+  WHERE pr.categoria = 'Livros'
+);`},
+ {t:'CTE (WITH)', d:'Consultas em etapas', f:'cte.sql', c:`-- Total gasto por cliente, depois classifica
+WITH gastos AS (
+  SELECT p.cliente_id, SUM(i.quantidade * i.preco_unitario) AS total
+  FROM pedidos p
+  JOIN itens_pedido i ON i.pedido_id = p.id
+  WHERE p.status <> 'cancelado'
+  GROUP BY p.cliente_id
+)
+SELECT c.nome, ROUND(g.total, 2) AS total,
+       CASE WHEN g.total >= 5000 THEN 'VIP'
+            WHEN g.total >= 1500 THEN 'Frequente'
+            ELSE 'Comum' END AS perfil
+FROM gastos g
+JOIN clientes c ON c.id = g.cliente_id
+ORDER BY g.total DESC;`},
+ {t:'Funções de janela', d:'RANK, ROW_NUMBER, SUM OVER', f:'janela.sql', c:`-- Ranking salarial dentro de cada departamento
+SELECT nome, departamento, salario,
+       RANK() OVER (PARTITION BY departamento ORDER BY salario DESC) AS posicao
+FROM funcionarios;
+
+-- Faturamento por mês e acumulado
+SELECT mes, ROUND(fat,2) AS faturamento,
+       ROUND(SUM(fat) OVER (ORDER BY mes), 2) AS acumulado
+FROM (
+  SELECT strftime('%Y-%m', p.data) AS mes,
+         SUM(i.quantidade * i.preco_unitario) AS fat
+  FROM pedidos p JOIN itens_pedido i ON i.pedido_id = p.id
+  GROUP BY mes
+);`},
+ {t:'Auto-relacionamento', d:'Funcionário e seu gerente', f:'self_join.sql', c:`-- A tabela funcionarios se relaciona com ela mesma
+SELECT f.nome AS funcionario, f.cargo, g.nome AS gerente
+FROM funcionarios f
+LEFT JOIN funcionarios g ON g.id = f.gerente_id
+ORDER BY g.nome;`},
+ {t:'Criar, inserir, alterar', d:'CREATE, INSERT, UPDATE, DELETE', f:'crud.sql', c:`-- Crie sua própria tabela
+CREATE TABLE IF NOT EXISTS estudos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  assunto TEXT NOT NULL,
+  horas REAL,
+  concluido INTEGER DEFAULT 0
+);
+
+INSERT INTO estudos (assunto, horas) VALUES
+  ('SELECT básico', 1.5),
+  ('JOINs', 2),
+  ('Python: listas', 1);
+
+UPDATE estudos SET concluido = 1 WHERE assunto = 'SELECT básico';
+
+DELETE FROM estudos WHERE horas < 1;
+
+SELECT * FROM estudos;`},
+ {t:'Datas no SQLite', d:'strftime, date()', f:'datas.sql', c:`-- Pedidos por mês
+SELECT strftime('%m', data) AS mes, COUNT(*) AS pedidos
+FROM pedidos
+GROUP BY mes ORDER BY mes;
+
+-- Data de hoje e daqui a 30 dias
+SELECT date('now') AS hoje, date('now', '+30 days') AS daqui_30;
+
+-- Tempo de casa (anos) dos funcionários
+SELECT nome, admissao,
+       CAST((julianday('now') - julianday(admissao)) / 365.25 AS INTEGER) AS anos
+FROM funcionarios ORDER BY anos DESC;`},
+ {g:'Python'},
+ {t:'Primeiros passos', d:'Variáveis, tipos e print', f:'basico.py', c:`nome = "Lwyza"
+idade = 30
+altura = 1.68
+estudando = True
+
+print("Olá,", nome)
+print(f"{nome} tem {idade} anos e {altura:.2f} m")
+print(type(idade), type(altura), type(estudando))
+
+# Operações
+print(10 / 3, 10 // 3, 10 % 3, 2 ** 10)`},
+ {t:'Listas e dicionários', d:'Estruturas de dados e loops', f:'listas.py', c:`notas = [7.5, 9.0, 6.0, 8.5]
+notas.append(10)
+print("Notas:", notas)
+print("Média:", sum(notas) / len(notas))
+print("Aprovadas:", [n for n in notas if n >= 7])
+
+aluno = {"nome": "Ana", "curso": "Direito", "periodo": 5}
+aluno["email"] = "ana@email.com"
+for chave, valor in aluno.items():
+    print(f"{chave:>8}: {valor}")`},
+ {t:'Funções', d:'def, parâmetros e retorno', f:'funcoes.py', c:`def calcular_desconto(preco, percentual=10):
+    """Retorna o preço com desconto."""
+    return preco * (1 - percentual / 100)
+
+print(calcular_desconto(200))
+print(calcular_desconto(200, percentual=25))
+
+def estatisticas(*valores):
+    return min(valores), max(valores), sum(valores) / len(valores)
+
+menor, maior, media = estatisticas(4, 8, 15, 16, 23, 42)
+print(f"menor={menor} maior={maior} média={media:.1f}")`},
+ {t:'Classes', d:'Programação orientada a objetos', f:'classes.py', c:`class Conta:
+    def __init__(self, titular, saldo=0):
+        self.titular = titular
+        self.saldo = saldo
+
+    def depositar(self, valor):
+        self.saldo += valor
+
+    def sacar(self, valor):
+        if valor > self.saldo:
+            raise ValueError("Saldo insuficiente")
+        self.saldo -= valor
+
+    def __repr__(self):
+        return f"Conta({self.titular!r}, saldo={self.saldo:.2f})"
+
+c = Conta("Maria", 100)
+c.depositar(50)
+c.sacar(30)
+print(c)
+
+try:
+    c.sacar(1000)
+except ValueError as e:
+    print("Erro:", e)`},
+ {t:'sqlite3: consultar', d:'Ler o banco com Python', f:'consulta_banco.py', c:`import sqlite3
+
+con = sqlite3.connect("banco.db")
+con.row_factory = sqlite3.Row      # acessar colunas pelo nome
+cur = con.cursor()
+
+estado = "SP"
+cur.execute("SELECT nome, cidade FROM clientes WHERE estado = ?", (estado,))
+for linha in cur.fetchall():
+    print(linha["nome"], "-", linha["cidade"])
+
+total = cur.execute("SELECT COUNT(*) FROM pedidos").fetchone()[0]
+print("\\nTotal de pedidos:", total)
+con.close()`},
+ {t:'sqlite3: inserir', d:'Gravar dados pelo Python', f:'inserir_banco.py', c:`import sqlite3
+
+con = sqlite3.connect("banco.db")
+cur = con.cursor()
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS tarefas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        feita INTEGER DEFAULT 0
+    )
+""")
+novas = [("Estudar JOIN",), ("Praticar pandas",), ("Revisar funções",)]
+cur.executemany("INSERT INTO tarefas (titulo) VALUES (?)", novas)
+con.commit()   # sem commit, nada é salvo!
+
+for t in cur.execute("SELECT * FROM tarefas"):
+    print(t)
+con.close()
+print("\\n✔ A tabela 'tarefas' já aparece no painel do banco.")`},
+ {t:'pandas + SQL', d:'DataFrames a partir do banco', f:'pandas_sql.py', c:`import sqlite3
+import pandas as pd   # na 1ª vez demora um pouco para baixar
+
+con = sqlite3.connect("banco.db")
+df = pd.read_sql_query("SELECT * FROM vw_vendas", con)
+
+print(df.shape, "linhas x colunas")
+resumo = (df.groupby("categoria")["total"]
+            .agg(["count", "sum", "mean"])
+            .round(2)
+            .sort_values("sum", ascending=False))
+display(resumo)   # mostra como tabela
+con.close()`},
+ {t:'Gráfico (matplotlib)', d:'Visualizar dados do banco', f:'grafico.py', c:`import sqlite3
+import matplotlib.pyplot as plt
+
+con = sqlite3.connect("banco.db")
+dados = con.execute("""
+    SELECT pr.categoria, SUM(i.quantidade * i.preco_unitario)
+    FROM itens_pedido i JOIN produtos pr ON pr.id = i.produto_id
+    GROUP BY pr.categoria ORDER BY 2 DESC
+""").fetchall()
+con.close()
+
+categorias = [d[0] for d in dados]
+valores = [d[1] for d in dados]
+
+plt.figure(figsize=(7, 4))
+plt.barh(categorias, valores, color="#007acc")
+plt.gca().invert_yaxis()
+plt.title("Faturamento por categoria")
+plt.xlabel("R$")
+plt.tight_layout()
+plt.show()`},
+ {t:'Arquivos CSV', d:'Gerar um relatório .csv', f:'csv_relatorio.py', c:`import csv, sqlite3
+
+con = sqlite3.connect("banco.db")
+linhas = con.execute("SELECT nome, cargo, salario FROM funcionarios").fetchall()
+con.close()
+
+with open("relatorio.csv", "w", newline="", encoding="utf-8") as f:
+    w = csv.writer(f)
+    w.writerow(["nome", "cargo", "salario"])
+    w.writerows(linhas)
+
+print("✔ relatorio.csv criado — veja no Explorador!")`},
+ {t:'input()', d:'Ler dados do usuário', f:'entrada.py', c:`# Escreva as respostas na aba ENTRADA (uma por linha) antes de executar
+nome = input("Qual seu nome? ")
+idade = int(input("Qual sua idade? "))
+print(f"Olá, {nome}! Em 10 anos você terá {idade + 10} anos.")`},
+];
+
+
+
+/* ---------------- UI helpers ---------------- */
+let toastT;
+function toast(msg, err=false){ const t=$('#toast'); t.textContent=msg; t.className='on'+(err?' err':''); clearTimeout(toastT); toastT=setTimeout(()=>t.className='',2800); }
+function overlay(html, onMount){
+  const o = $('#overlay'); o.innerHTML = html; o.classList.add('on'); o._onCancel = null;
+  const close = () => { o.classList.remove('on'); o.innerHTML=''; };
+  o.onclick = e => { if (e.target === o) { close(); o._onCancel && o._onCancel(); } };
+  onMount && onMount(o, close);
+  return close;
+}
+function sheet(title, items){
+  const html = `<div class="sheet"><div class="sh-t">${title}</div>${items.map((it,i)=>`<button class="mi ${it.danger?'danger':''}" data-i="${i}">${it.icon||''}<span>${esc(it.label)}</span></button>`).join('')}</div>`;
+  overlay(html, (o, close) => { o.querySelectorAll('.mi').forEach(b => b.onclick = () => { close(); items[+b.dataset.i].run(); }); });
+}
+function ask({title, msg='', value='', placeholder='', ok='OK', validate}){
+  return new Promise(res => {
+    overlay(`<div class="sheet"><div class="dlg"><h3>${esc(title)}</h3>${msg?`<p>${msg}</p>`:''}<input type="text" id="askIn" value="${esc(value)}" placeholder="${esc(placeholder)}" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="er" id="askEr"></div><div class="acts"><button class="btn sec2" id="askNo">Cancelar</button><button class="btn" id="askOk">${esc(ok)}</button></div></div></div>`, (o, close) => {
+      const inp = o.querySelector('#askIn');
+      o._onCancel = () => res(null);
+      const done = () => { const v = inp.value.trim(); const e = validate ? validate(v) : null; if (e) { o.querySelector('#askEr').textContent = e; return; } close(); res(v); };
+      o.querySelector('#askOk').onclick = done;
+      o.querySelector('#askNo').onclick = () => { close(); res(null); };
+      inp.onkeydown = e => { if (e.key === 'Enter') done(); };
+      setTimeout(() => { inp.focus(); const dot = inp.value.lastIndexOf('.'); try { inp.setSelectionRange(0, dot > 0 ? dot : inp.value.length); } catch {} }, 80);
+    });
+  });
+}
+function confirmBox(title, msg, ok='Confirmar', danger=true){
+  return new Promise(res => {
+    overlay(`<div class="sheet"><div class="dlg"><h3>${esc(title)}</h3><p>${msg}</p><div class="acts"><button class="btn sec2" id="cNo">Cancelar</button><button class="btn ${danger?'danger':''}" id="cOk">${esc(ok)}</button></div></div></div>`, (o, close) => {
+      o._onCancel = () => res(false);
+      o.querySelector('#cOk').onclick = () => { close(); res(true); };
+      o.querySelector('#cNo').onclick = () => { close(); res(false); };
+    });
+  });
+}
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); toast('Copiado ✓'); }
+  catch { const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('Copiado ✓'); }catch{ toast('Não foi possível copiar', true);} ta.remove(); }
+}
+
+/* ---------------- Persistência local ---------------- */
+let localT;
+function persistLocalSoon(){ clearTimeout(localT); localT = setTimeout(persistLocalNow, 400); }
+function persistLocalNow(){
+  clearTimeout(localT);
+  const data = { files: state.files, open: state.open, active: state.active, deleted: state.deleted, deletedPaths: state.deletedPaths, settings: state.settings, wsUpdated: state.wsUpdated, dbUpdated: state.dbUpdated };
+  if (!lsSet(LS_KEY, JSON.stringify(data))) idb.set('ws', JSON.parse(JSON.stringify(data)));
+}
+async function loadLocal(){
+  let raw = lsGet(LS_KEY); let data = null;
+  if (raw) { try { data = JSON.parse(raw); } catch {} }
+  if (!data) { const d = await idb.get('ws'); if (d && d.files) data = d; }
+  if (data && Array.isArray(data.files)) {
+    Object.assign(state, { files: data.files, open: data.open||[], active: data.active||null, deleted: data.deleted||[], deletedPaths: data.deletedPaths||[], settings: {...DEFAULT_SETTINGS, ...(data.settings||{})}, wsUpdated: data.wsUpdated||0, dbUpdated: data.dbUpdated||0 });
+    state.open = state.open.filter(id => state.files.some(f => f.id === id));
+  } else {
+    state.files = DEFAULT_FILES(); state.open = ['consultas_sql','main_py']; state.active = 'consultas_sql';
+  }
+}
+
+/* ---------------- base64 / hash ---------------- */
+function toB64(u8){ let s=''; for (let i=0;i<u8.length;i+=0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i+0x8000)); return btoa(s); }
+function fromB64(b){ const s = atob(b); const u = new Uint8Array(s.length); for (let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
+function hashBytes(u8){ let h = 2166136261 >>> 0; for (let i=0;i<u8.length;i++){ h ^= u8[i]; h = Math.imul(h, 16777619); } return (h>>>0) + ':' + u8.length; }
+const isSqliteFile = u8 => u8 && u8.length > 16 && String.fromCharCode(...u8.subarray(0, 15)) === 'SQLite format 3';
+
+/* ---------------- Sincronização com GitHub (repositório privado) ---------------- */
+const GH_KEY = 'codestudio:github';
+const BASE_KEY = 'codestudio:ghbase';
+const DEFAULT_REPO = 'Guilherme-Lucas7/luna-studio-dados';
+const gh = Object.assign({ token: '', repo: DEFAULT_REPO, branch: 'main' }, (() => { try { return JSON.parse(lsGet0(GH_KEY)) || {}; } catch { return {}; } })());
+let ghBase = (() => { try { return JSON.parse(lsGet0(BASE_KEY)) || {}; } catch { return {}; } })();
+const saveGh = () => { try { localStorage.setItem(GH_KEY, JSON.stringify(gh)); } catch {} };
+const saveBase = () => { try { localStorage.setItem(BASE_KEY, JSON.stringify(ghBase)); } catch {} };
+const Sync = { running:false, again:false, status:'local', lastOk:0, err:'' };
+
+function setSync(s, detail=''){
+  Sync.status = s;
+  const short = { local:'Neste aparelho', syncing:'Sincronizando', ok:'Sincronizado', error:'Erro na sinc.', offline:'Sem internet', pending:'Alterado' }[s] || s;
+  $('#syncChip').className = s === 'pending' ? 'saving' : s === 'syncing' ? 'saving' : s === 'offline' ? 'error' : s;
+  $('#syncTxt').textContent = short;
+  $('#sbSync').textContent = { local:'💾 Salvo neste aparelho', syncing:'⟳ Sincronizando…', ok:'✓ Sincronizado com o GitHub', error:'⚠ Erro na sincronização', offline:'⚠ Sem internet — salvo neste aparelho', pending:'● Alterações a sincronizar' }[s] || s;
+  renderSyncCard(detail);
+}
+function renderSyncCard(detail=''){
+  const el = $('#syncCard'); if (!el) return;
+  const connected = !!gh.token;
+  const when = Sync.lastOk ? new Date(Sync.lastOk).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }) : '—';
+  el.innerHTML = connected ? `
+    <div class="sc-row"><span class="sc-dot ${Sync.status}"></span><b>${{ ok:'Sincronizado', syncing:'Sincronizando…', error:'Erro na sincronização', offline:'Sem internet', pending:'Alterações pendentes', local:'Conectado' }[Sync.status] || ''}</b></div>
+    <div class="sc-sub">Repositório: <b>${esc(gh.repo)}</b><br>Última sincronização: ${when}${detail || Sync.err ? `<br><span style="color:var(--red)">${esc(detail || Sync.err)}</span>` : ''}</div>
+    <div class="sc-acts"><button class="btn" id="ghSyncNow">Sincronizar agora</button><button class="btn sec2" id="ghDisconnect">Desconectar</button></div>`
+  : `
+    <div class="sc-row"><span class="sc-dot local"></span><b>Sincronização desligada</b></div>
+    <div class="sc-sub">Conecte ao GitHub para ter os mesmos arquivos e o mesmo banco no celular, no tablet e no computador. Você faz isso <b>uma vez em cada aparelho</b>.</div>
+    <label class="sc-lbl">Chave de acesso (token) do GitHub</label>
+    <input type="password" id="ghToken" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label class="sc-lbl">Repositório dos dados</label>
+    <input type="text" id="ghRepo" value="${esc(gh.repo)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <div class="sc-acts"><button class="btn" id="ghConnect">Conectar</button></div>
+    <details class="sc-help"><summary>Como criar a chave (token)?</summary>
+      <ol>
+        <li>No navegador, entre no GitHub com a conta <b>${esc(gh.repo.split('/')[0])}</b>.</li>
+        <li>Abra <b>github.com/settings/personal-access-tokens/new</b>.</li>
+        <li>Nome: <b>Luna Studio</b>. Validade: <b>1 ano</b> (ou "No expiration").</li>
+        <li>Em <b>Repository access</b>, escolha <b>Only select repositories</b> e marque <b>${esc(gh.repo.split('/')[1] || '')}</b>.</li>
+        <li>Em <b>Permissions → Repository permissions</b>, coloque <b>Contents</b> em <b>Read and write</b>.</li>
+        <li>Clique em <b>Generate token</b>, copie e cole aqui. Use a mesma chave nos outros aparelhos.</li>
+      </ol></details>`;
+  const q = s => el.querySelector(s);
+  if (q('#ghConnect')) q('#ghConnect').onclick = async () => {
+    const t = q('#ghToken').value.trim(); const r = q('#ghRepo').value.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, '');
+    if (!t) { toast('Cole a chave de acesso', true); return; }
+    if (!/^[\w.-]+\/[\w.-]+$/.test(r)) { toast('Repositório no formato dono/nome', true); return; }
+    gh.token = t; gh.repo = r;
+    try { const info = await ghApi(`/repos/${gh.repo}`); gh.branch = info.default_branch || 'main'; }
+    catch (e) { gh.token = ''; renderSyncCard(); toast(ghErrMsg(e), true); return; }
+    saveGh(); ghBase = {}; saveBase(); toast('Conectado ✓ Sincronizando…'); syncNow();
+  };
+  if (q('#ghSyncNow')) q('#ghSyncNow').onclick = () => syncNow();
+  if (q('#ghDisconnect')) q('#ghDisconnect').onclick = async () => {
+    if (!await confirmBox('Desconectar deste aparelho?', 'Seus arquivos continuam neste aparelho e no GitHub; só para de sincronizar aqui.', 'Desconectar', false)) return;
+    gh.token = ''; saveGh(); ghBase = {}; saveBase(); setSync('local');
+  };
+}
+function ghErrMsg(e){
+  if (!navigator.onLine) return 'Sem internet.';
+  if (e && e.status === 401) return 'Chave (token) inválida ou expirada.';
+  if (e && e.status === 404) return 'Repositório não encontrado — confira o nome e se a chave tem acesso a ele.';
+  if (e && e.status === 403) return 'A chave não tem permissão de escrita (Contents: Read and write).';
+  return 'Erro ao falar com o GitHub' + (e && e.message ? ': ' + e.message : '');
+}
+async function ghApi(path, opts={}){
+  const res = await fetch('https://api.github.com' + path, {
+    method: opts.method || 'GET',
+    headers: { 'Authorization': 'Bearer ' + gh.token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    cache: 'no-store',
+  });
+  if (res.status === 204) return null;
+  const txt = await res.text(); let data = null; try { data = txt ? JSON.parse(txt) : null; } catch {}
+  if (!res.ok) { const err = new Error((data && data.message) || res.statusText); err.status = res.status; throw err; }
+  return data;
+}
+async function gitSha(bytes){
+  const head = new TextEncoder().encode(`blob ${bytes.length}\0`);
+  const all = new Uint8Array(head.length + bytes.length); all.set(head); all.set(bytes, head.length);
+  const h = await crypto.subtle.digest('SHA-1', all);
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+const enc8 = s => new TextEncoder().encode(s);
+const dec8 = b => new TextDecoder().decode(b);
+const encPath = p => p.split('/').map(encodeURIComponent).join('/');
+async function remoteTree(){
+  try {
+    const t = await ghApi(`/repos/${gh.repo}/git/trees/${encodeURIComponent(gh.branch)}?recursive=1`);
+    const m = new Map(); for (const it of (t.tree || [])) if (it.type === 'blob') m.set(it.path, it.sha); return m;
+  } catch (e) {
+    if (e.status === 409) return new Map();               // repositório vazio
+    if (e.status === 404) { await ghApi(`/repos/${gh.repo}`); return new Map(); } // ramo ainda não existe
+    throw e;
+  }
+}
+async function getBlob(sha){ const b = await ghApi(`/repos/${gh.repo}/git/blobs/${sha}`); return fromB64((b.content || '').replace(/\n/g, '')); }
+async function putFile(path, bytes, sha, msg){
+  const r = await ghApi(`/repos/${gh.repo}/contents/${encPath(path)}`, { method:'PUT', body: { message: msg || `Atualiza ${path}`, content: toB64(bytes), branch: gh.branch, ...(sha ? { sha } : {}) } });
+  return r.content.sha;
+}
+async function delFile(path, sha){ await ghApi(`/repos/${gh.repo}/contents/${encPath(path)}`, { method:'DELETE', body: { message: `Remove ${path}`, sha, branch: gh.branch } }); }
+
+const FILE_DIR = 'arquivos/';
+const DB_PATH = 'banco.db';
+async function syncOnce(){
+  flushActive();
+  const remote = await remoteTree();
+  const deleted = new Set(state.deletedPaths || []);
+  let changedLocal = false;
+  // Arquivos locais
+  for (const f of [...state.files]) {
+    const p = FILE_DIR + f.name; const bytes = enc8(f.content);
+    const ls = await gitSha(bytes); const rs = remote.get(p); const bs = ghBase[p];
+    if (rs === ls) { ghBase[p] = ls; remote.delete(p); continue; }
+    if (!rs) {
+      if (bs && bs === ls) { removeFileLocal(f.id); changedLocal = true; delete ghBase[p]; continue; } // apagado em outro aparelho
+      ghBase[p] = await putFile(p, bytes, null, `Cria ${f.name}`); continue;
+    }
+    remote.delete(p);
+    if (bs === ls || (!bs && !f.updated)) { const nb = await getBlob(rs); f.content = dec8(nb); f.updated = Date.now(); refreshDoc(f.id); ghBase[p] = rs; changedLocal = true; }
+    else if (bs === rs) { ghBase[p] = await putFile(p, bytes, rs, `Atualiza ${f.name}`); }
+    else { // os dois mudaram: guarda a versão do outro aparelho como cópia
+      const nb = await getBlob(rs);
+      const copyName = uniqueName(f.name.replace(/(\.[^.]+)?$/, ' (outro aparelho)$1'));
+      state.files.push({ id: uid(), name: copyName, content: dec8(nb), updated: Date.now() }); changedLocal = true;
+      ghBase[p] = await putFile(p, bytes, rs, `Atualiza ${f.name}`);
+      toast(`Conflito em ${f.name}: a versão do outro aparelho foi salva como ${copyName}`);
+    }
+  }
+  // Banco
+  await sqlReady;
+  if (sqldb) {
+    const bytes = sqldb.export(); const ls = await gitSha(bytes); const rs = remote.get(DB_PATH); const bs = ghBase[DB_PATH];
+    remote.delete(DB_PATH);
+    if (rs === ls) ghBase[DB_PATH] = ls;
+    else if (!rs) ghBase[DB_PATH] = await putFile(DB_PATH, bytes, null, 'Envia banco.db');
+    else if (bs === ls || !bs && !state.dbUpdated) { const nb = await getBlob(rs); if (replaceDb(nb, Date.now(), false)) { idb.set('db', nb); ghBase[DB_PATH] = rs; } }
+    else ghBase[DB_PATH] = await putFile(DB_PATH, bytes, rs, 'Atualiza banco.db');
+  }
+  // Arquivos que só existem no GitHub
+  for (const [p, rs] of remote) {
+    if (!p.startsWith(FILE_DIR) || p.slice(FILE_DIR.length).includes('/')) continue;
+    if (deleted.has(p) || ghBase[p] === rs) { try { await delFile(p, rs); } catch (e) { if (e.status !== 404) throw e; } delete ghBase[p]; continue; }
+    const name = p.slice(FILE_DIR.length);
+    const nb = await getBlob(rs);
+    state.files.push({ id: uid(), name: uniqueName(name), content: dec8(nb), updated: Date.now() });
+    ghBase[p] = rs; changedLocal = true;
+  }
+  state.deletedPaths = [];
+  saveBase(); persistLocalNow();
+  if (changedLocal) { state.open = state.open.filter(id => state.files.some(f => f.id === id)); if (!activeFile()) state.active = state.open[0] || null; renderAll(); }
+}
+async function syncNow(){
+  if (!gh.token) { setSync('local'); return; }
+  if (Sync.running) { Sync.again = true; return; }
+  if (!navigator.onLine) { setSync('offline'); return; }
+  Sync.running = true; setSync('syncing');
+  try {
+    do { Sync.again = false; await syncOnce(); } while (Sync.again);
+    Sync.lastOk = Date.now(); Sync.err = ''; setSync('ok');
+  } catch (e) {
+    console.warn(e); Sync.err = ghErrMsg(e);
+    setSync(navigator.onLine ? 'error' : 'offline');
+    if (e.status === 409 || e.status === 422) { Sync.running = false; setTimeout(syncNow, 1500); return; }
+  } finally { Sync.running = false; }
+}
+let syncT;
+function scheduleSync(ms=4000){ if (!gh.token) return; if (Sync.status !== 'syncing') setSync('pending'); clearTimeout(syncT); syncT = setTimeout(syncNow, ms); }
+function pushFile(){ scheduleSync(); }
+function deleteFileRemote(){ scheduleSync(); }
+function touchWs(){ persistLocalSoon(); }
+function pushDbSoon(){ scheduleSync(); }
+function initCloud(){
+  if (!gh.token) { setSync('local'); return; }
+  syncNow();
+}
+window.addEventListener('online', () => scheduleSync(500));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(300); else if (gh.token && Sync.status === 'pending') syncNow(); });
+
+/* ---------------- SQLite (sql.js, embutido) ---------------- */
+let SQL = null, sqldb = null, sqlError = null;
+const sqlReady = (async () => {
+  SQL = await initSqlJs({ locateFile: f => assetURL('vendor/' + f) });
+  const saved = await idb.get('db');
+  if (saved && saved.length) { try { sqldb = new SQL.Database(saved); sqldb.exec('SELECT 1 FROM sqlite_master LIMIT 1'); } catch { sqldb = null; } }
+  if (!sqldb) { sqldb = new SQL.Database(); sqldb.exec(sampleSQL()); idb.set('db', sqldb.export()); }
+  refreshSchema();
+})().catch(e => { sqlError = e; console.error(e); termLine('✗ Não foi possível iniciar o SQLite: ' + (e.message||e), 'err'); });
+async function needSQL(){ await sqlReady; if (!sqldb) throw new Error('O SQLite não carregou' + (sqlError ? ': ' + (sqlError.message||sqlError) : '') + '. Recarregue a página.'); }
+
+function replaceDb(bytes, updated, push=true){
+  try { const nd = new SQL.Database(bytes); nd.exec('SELECT 1 FROM sqlite_master LIMIT 1'); if (sqldb) sqldb.close(); sqldb = nd; }
+  catch (e) { toast('Arquivo de banco inválido', true); return false; }
+  state.dbUpdated = updated || Date.now();
+  refreshSchema();
+  if (push) dbChanged(false);
+  return true;
+}
+let idbDbT;
+function dbChanged(bump=true){
+  if (bump) state.dbUpdated = Date.now();
+  persistLocalSoon();
+  clearTimeout(idbDbT); idbDbT = setTimeout(() => idb.set('db', sqldb.export()), 500);
+  pushDbSoon();
+  refreshSchema();
+}
+let schema = { tables: [], views: [], indexes: [] };
+function refreshSchema(){
+  if (!sqldb) return;
+  try {
+    const r = sqldb.exec("SELECT type, name, tbl_name, sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' ORDER BY name");
+    const rows = r[0] ? r[0].values : [];
+    const cols = n => { const x = sqldb.exec(`PRAGMA table_info(${qi(n)})`); return x[0] ? x[0].values.map(v => ({ name:v[1], type:v[2]||'', pk:!!v[5] })) : []; };
+    const count = n => { try { return sqldb.exec(`SELECT COUNT(*) FROM ${qi(n)}`)[0].values[0][0]; } catch { return '?'; } };
+    schema = {
+      tables: rows.filter(x => x[0]==='table').map(x => ({ name:x[1], sql:x[3], cols:cols(x[1]), count:count(x[1]) })),
+      views:  rows.filter(x => x[0]==='view').map(x => ({ name:x[1], sql:x[3], cols:cols(x[1]) })),
+      indexes:rows.filter(x => x[0]==='index').map(x => ({ name:x[1], table:x[2], sql:x[3] })),
+    };
+  } catch (e) { console.warn(e); }
+  renderDbTree(); updateHints();
+  let size = 0; try { size = sqldb.exec('PRAGMA page_count')[0].values[0][0] * sqldb.exec('PRAGMA page_size')[0].values[0][0]; } catch {}
+  $('#dbSize').textContent = `${schema.tables.length} tabela${schema.tables.length===1?'':'s'} · ${fmtBytes(size)}`;
+  $('#sbDb').textContent = `🗄 banco.db · ${schema.tables.length} tabelas`;
+}
+const fmtBytes = b => b < 1024 ? b+' B' : b < 1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(2)+' MB';
+
+/* ---------------- Editor ---------------- */
+const cm = CodeMirror(document.getElementById('editor'), {
+  value: '', theme: 'vsdark', lineNumbers: true, indentUnit: 4, tabSize: 4, indentWithTabs: false,
+  matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true, lineWrapping: false,
+  inputStyle: isTouch ? 'contenteditable' : 'textarea', spellcheck: false, autocorrect: false, autocapitalize: false,
+  extraKeys: {
+    'Ctrl-Enter': () => run(), 'Cmd-Enter': () => run(),
+    'Ctrl-Space': 'autocomplete',
+    'Tab': c => c.somethingSelected() ? c.execCommand('indentMore') : c.replaceSelection(' '.repeat(4 - (c.getCursor().ch % 4))),
+    'Shift-Tab': 'indentLess',
+    'Ctrl-/': 'toggleComment', 'Cmd-/': 'toggleComment',
+    'Ctrl-S': () => { flushActive(); toast('Salvo ✓'); }, 'Cmd-S': () => { flushActive(); toast('Salvo ✓'); },
+  },
+});
+cm.getWrapperElement().style.display = 'none';
+const modeFor = n => ({ py:'python', sql:'text/x-sqlite' }[extOf(n)] || 'text/plain');
+function getDoc(f){ let d = docs.get(f.id); if (!d) { d = CodeMirror.Doc(f.content, modeFor(f.name)); docs.set(f.id, d); } return d; }
+function refreshDoc(id){ const d = docs.get(id); const f = state.files.find(x => x.id === id); if (d && f && d.getValue() !== f.content) { const c = d.getCursor(); d.setValue(f.content); d.setCursor(c); } }
+let changeT;
+cm.on('changes', () => { if (!activeFile()) return; clearErrLine(); clearTimeout(changeT); changeT = setTimeout(flushActive, 700); });
+function flushActive(){
+  clearTimeout(changeT);
+  const f = activeFile(); if (!f || !docs.has(f.id)) return;
+  const v = docs.get(f.id).getValue();
+  if (v !== f.content) { f.content = v; f.updated = Date.now(); persistLocalSoon(); pushFile(f.id); }
+}
+cm.on('cursorActivity', () => { const c = cm.getCursor(); $('#sbPos').textContent = `Ln ${c.line+1}, Col ${c.ch+1}`; });
+cm.on('focus', () => { body.classList.add('edfocus'); setTimeout(checkTyping, 300); });
+cm.on('blur', () => { setTimeout(() => { if (!cm.hasFocus()) { body.classList.remove('edfocus'); checkTyping(); } }, 120); });
+
+const PY_WORDS = ('False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield '+
+ 'print len range input int float str bool list dict set tuple enumerate zip sorted reversed sum min max abs round open type isinstance map filter any all format help dir '+
+ 'sqlite3 connect cursor execute executemany fetchall fetchone fetchmany commit close row_factory Row pandas read_sql_query read_csv DataFrame groupby agg sort_values head describe '+
+ 'append extend insert remove pop items keys values split join strip upper lower replace startswith endswith matplotlib pyplot figure plot bar barh scatter show title xlabel ylabel legend tight_layout '+
+ 'math random datetime csv json __name__ __init__ self display').split(' ');
+function pyHint(c){
+  const cur = c.getCursor(); const line = c.getLine(cur.line).slice(0, cur.ch);
+  const m = line.match(/[A-Za-z_]\w*$/); if (!m) return null;
+  const w = m[0]; const words = new Set(PY_WORDS);
+  (c.getValue().match(/[A-Za-z_]\w{2,}/g) || []).forEach(x => words.add(x));
+  const list = [...words].filter(x => x && x !== w && x.toLowerCase().startsWith(w.toLowerCase())).sort((a,b)=>a.length-b.length).slice(0, 40);
+  if (!list.length) return null;
+  return { list, from: CodeMirror.Pos(cur.line, cur.ch - w.length), to: cur };
+}
+function updateHints(){
+  const tables = {};
+  [...schema.tables, ...schema.views].forEach(t => tables[t.name] = t.cols.map(c => c.name));
+  const f = activeFile(); const isPy = f && extOf(f.name) === 'py';
+  cm.setOption('hintOptions', { hint: isPy ? pyHint : CodeMirror.hint.sql, tables, completeSingle: false, closeCharacters: /[\s()\[\]{};:>,=]/ });
+}
+cm.on('inputRead', (c, ch) => {
+  if (!state.settings.autocomplete || c.state.completionActive) return;
+  const t = ch.text.join(''); if (!/[\w.]$/.test(t)) return;
+  const f = activeFile(); if (!f || !['py','sql'].includes(extOf(f.name))) return;
+  const tok = c.getTokenAt(c.getCursor()); if (tok.type && /string|comment/.test(tok.type)) return;
+  const line = c.getLine(c.getCursor().line).slice(0, c.getCursor().ch);
+  const m = line.match(/[\w.]+$/); if (!m || (m[0].length < 2 && !m[0].endsWith('.'))) return;
+  c.showHint({ completeSingle: false });
+});
+let errMark = null;
+function clearErrLine(){ if (errMark !== null) { try { cm.removeLineClass(errMark, 'background', 'cm-errline'); } catch {} errMark = null; } }
+function markErrLine(n){ clearErrLine(); if (n < 0 || n >= cm.lineCount()) return; errMark = cm.addLineClass(n, 'background', 'cm-errline'); }
+
+/* Barra de símbolos */
+const KEYS = [['▶','run','w go'],['⇥','tab','w'],['(','('],[')',')'],[':',':'],['=','='],['"','"'],["'","'"],['[','['],[']',']'],['{','{'],['}','}'],['_','_'],['.','.'],[',',','],['#','#'],['<','<'],['>','>'],['+','+'],['-','-'],['*','*'],['/','/'],[';',';'],['%','%'],['←','left','w'],['→','right','w'],['↶','undo','w'],['↷','redo','w']];
+$('#keybar').innerHTML = KEYS.map(k => `<button class="${k[2]||''}" data-k="${esc(k[1])}">${esc(k[0])}</button>`).join('');
+$('#keybar').addEventListener('pointerdown', e => {
+  const b = e.target.closest('button'); if (!b) return; e.preventDefault();
+  const k = b.dataset.k;
+  if (k === 'run') { run(); return; }
+  if (k === 'tab') cm.somethingSelected() ? cm.execCommand('indentMore') : cm.replaceSelection('    ');
+  else if (k === 'left') cm.execCommand('goCharLeft');
+  else if (k === 'right') cm.execCommand('goCharRight');
+  else if (k === 'undo') cm.undo();
+  else if (k === 'redo') cm.redo();
+  else cm.replaceSelection(k);
+  if (!cm.hasFocus()) cm.focus();
+});
+
+/* Altura real da tela (teclado virtual) */
+function setAppHeight(){ cm.refresh(); }
+let baseH = window.innerHeight;
+function checkTyping(){
+  const vv = window.visualViewport; const h = vv ? vv.height : window.innerHeight;
+  if (!body.classList.contains('edfocus')) baseH = Math.max(baseH, h);
+  cm.refresh();
+}
+window.addEventListener('resize', () => { baseH = Math.max(window.innerHeight, baseH); setAppHeight(); applyView(); });
+
+/* ---------------- Navegação entre telas ---------------- */
+let view = 'code', sideView = 'files', sideOpen = true, outMin = false;
+const TITLES = { files:'Arquivos', db:'Banco de dados', learn:'Aprender', settings:'Ajustes', out:'Saída' };
+function setView(v){
+  if (isDesk()) {
+    if (v === 'code') { cm.focus(); }
+    else if (v === 'out') { outMin = false; }
+    else if (sideView === v && sideOpen) sideOpen = false;
+    else { sideView = v; sideOpen = true; }
+  } else {
+    view = v;
+    if (['files','db','learn','settings'].includes(v)) sideView = v;
+    if (v === 'out') $('#outBadge').classList.remove('on');
+  }
+  if (v === 'db') refreshSchema();
+  applyView();
+}
+function applyView(){
+  appEl.dataset.view = view; appEl.dataset.side = sideView;
+  appEl.classList.toggle('side-closed', isDesk() && !sideOpen);
+  appEl.classList.toggle('out-min', isDesk() && outMin);
+  $$('.nb').forEach(b => b.classList.toggle('on', isDesk() ? (sideOpen && b.dataset.v === sideView) : b.dataset.v === view));
+  $('#vtitle').textContent = TITLES[view] || '';
+  setTimeout(() => cm.refresh(), 30);
+}
+$$('.nb').forEach(b => b.onclick = () => setView(b.dataset.v));
+function showOut(tab){
+  setPtab(tab);
+  if (isDesk()) { outMin = false; applyView(); }
+  else setView('out');
+}
+
+/* ---------------- Arquivos / abas ---------------- */
+const activeFile = () => state.files.find(f => f.id === state.active) || null;
+function openFile(id, {silent=false, stay=false}={}){
+  flushActive();
+  const f = state.files.find(x => x.id === id); if (!f) return;
+  if (!state.open.includes(id)) state.open.push(id);
+  state.active = id;
+  cm.swapDoc(getDoc(f));
+  showEditor(true);
+  cm.getWrapperElement().classList.toggle('py', extOf(f.name) === 'py');
+  updateHints(); renderTabs(); renderFiles(); renderChrome();
+  if (!silent) touchWs();
+  if (extOf(f.name) === 'py') schedulePyPreload();
+  if (!isDesk() && !stay && view !== 'code') setView('code');
+  setTimeout(() => cm.refresh(), 0);
+}
+function showEditor(on){ cm.getWrapperElement().style.display = on ? '' : 'none'; $('#empty').classList.toggle('on', !on); $('#runbtn').style.visibility = on ? '' : 'hidden'; }
+function closeTab(id){
+  if (id === state.active) flushActive();
+  const i = state.open.indexOf(id); if (i < 0) return;
+  state.open.splice(i, 1);
+  if (state.active === id) {
+    const next = state.open[i] || state.open[i-1] || null;
+    if (next) { openFile(next, {stay:true}); return; }
+    state.active = null; showEditor(false);
+  }
+  renderTabs(); renderFiles(); renderChrome(); touchWs();
+}
+function uniqueName(name){
+  const names = new Set(state.files.map(f => f.name.toLowerCase()));
+  if (!names.has(name.toLowerCase())) return name;
+  const m = name.match(/^(.*?)(\.[^.]+)?$/); let i = 2;
+  while (names.has(`${m[1]}_${i}${m[2]||''}`.toLowerCase())) i++;
+  return `${m[1]}_${i}${m[2]||''}`;
+}
+function createFile(name, content='', open=true){
+  const f = { id: uid(), name: uniqueName(name), content, updated: Date.now() };
+  state.files.push(f); persistLocalSoon(); pushFile(f.id);
+  if (open) openFile(f.id); else renderFiles();
+  return f;
+}
+function removeFileLocal(id){
+  state.files = state.files.filter(f => f.id !== id); docs.delete(id);
+  state.open = state.open.filter(x => x !== id);
+  if (state.active === id) state.active = state.open[0] || null;
+}
+const validName = (v, selfId) => {
+  if (!v) return 'Digite um nome.';
+  if (!/^[\w\-. ()À-ú]+$/.test(v)) return 'Use letras, números, _ - . ( )';
+  if (!/\.[a-z0-9]+$/i.test(v)) return 'Inclua a extensão (.py, .sql, .csv, .txt…)';
+  if (state.files.some(f => f.id !== selfId && f.name.toLowerCase() === v.toLowerCase())) return 'Já existe um arquivo com esse nome.';
+  return null;
+};
+async function newFile(ext){
+  const name = await ask({ title: ext === 'py' ? 'Novo arquivo Python' : 'Novo arquivo SQL', value: uniqueName(`${ext === 'py' ? 'script' : 'consulta'}.${ext}`), ok: 'Criar', validate: v => validName(v) });
+  if (!name) return;
+  const tpl = extOf(name) === 'sql' ? '-- Escreva sua consulta\nSELECT * FROM clientes LIMIT 10;\n' : extOf(name) === 'py' ? '# Escreva seu código Python\nprint("Olá, mundo!")\n' : '';
+  createFile(name, tpl);
+}
+async function renameFile(id){
+  const f = state.files.find(x => x.id === id); if (!f) return;
+  const name = await ask({ title: 'Renomear arquivo', value: f.name, ok: 'Renomear', validate: v => validName(v, id) });
+  if (!name || name === f.name) return;
+  if (id === state.active) flushActive();
+  (state.deletedPaths = state.deletedPaths || []).push('arquivos/' + f.name);
+  f.name = name; f.updated = Date.now();
+  docs.delete(id);
+  if (state.active === id) { cm.swapDoc(getDoc(f)); updateHints(); cm.getWrapperElement().classList.toggle('py', extOf(f.name)==='py'); }
+  persistLocalSoon(); pushFile(id); renderAll();
+}
+async function deleteFile(id){
+  const f = state.files.find(x => x.id === id); if (!f) return;
+  if (!await confirmBox('Excluir arquivo?', `<b>${esc(f.name)}</b> será apagado permanentemente.`, 'Excluir')) return;
+  const wasActive = state.active === id;
+  removeFileLocal(id); (state.deletedPaths = state.deletedPaths || []).push('arquivos/' + f.name);
+  persistLocalSoon(); deleteFileRemote(id);
+  if (wasActive) { if (state.active) openFile(state.active, {stay:true}); else showEditor(false); }
+  renderAll(); touchWs();
+}
+function fileMenu(id){
+  const f = state.files.find(x => x.id === id); if (!f) return;
+  const e = extOf(f.name); const items = [];
+  if (e === 'py' || e === 'sql') items.push({ icon: IC.play, label: 'Executar', run: () => { openFile(id); run(); } });
+  if (e === 'csv') items.push({ icon: IC.db, label: 'Criar tabela no banco com este CSV', run: () => csvToTable(f.name, f.content) });
+  items.push({ icon: IC.edit, label: 'Renomear', run: () => renameFile(id) });
+  items.push({ icon: IC.dup, label: 'Duplicar', run: () => { if (id === state.active) flushActive(); createFile(f.name.replace(/(\.[^.]+)$/, '_copia$1'), f.content); } });
+  items.push({ icon: IC.copy, label: 'Copiar conteúdo', run: () => { if (id === state.active) flushActive(); copyText(f.content); } });
+  items.push({ icon: IC.down, label: 'Baixar arquivo', run: () => downloadText(f) });
+  items.push({ icon: IC.trash, label: 'Excluir', danger: true, run: () => deleteFile(id) });
+  sheet(`${fbadge(f.name)}<span>${esc(f.name)}</span>`, items);
+}
+
+/* ---------------- Renderização ---------------- */
+function renderTabs(){
+  $('#tabs').innerHTML = state.open.map(id => { const f = state.files.find(x => x.id === id); if (!f) return '';
+    return `<div class="tab ${id===state.active?'on':''}" data-id="${id}">${fbadge(f.name, true)}<span class="nm">${esc(f.name)}</span><span class="x" data-x="${id}">${IC.x}</span></div>`; }).join('');
+  const on = $('#tabs .tab.on'); if (on) on.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  $('#tabs').style.display = state.open.length ? '' : 'none';
+}
+$('#tabs').addEventListener('click', e => { const x = e.target.closest('[data-x]'); if (x) { e.stopPropagation(); closeTab(x.dataset.x); return; } const t = e.target.closest('.tab'); if (t) openFile(t.dataset.id); });
+function renderFiles(){
+  const order = { py:0, sql:1, csv:2 };
+  const files = [...state.files].sort((a,b) => (order[extOf(a.name)] ?? 9) - (order[extOf(b.name)] ?? 9) || a.name.localeCompare(b.name));
+  const lines = f => { const n = (f.content.match(/\n/g)||[]).length + 1; return `${n} linha${n===1?'':'s'}`; };
+  $('#filelist').innerHTML = files.map(f => `<div class="row ${f.id===state.active?'on':''}" data-id="${f.id}">${fbadge(f.name)}<span class="nm">${esc(f.name)}<span class="sub">${lines(f)}</span></span><button class="more" data-more="${f.id}">${IC.more}</button></div>`).join('') || '<div class="card">Nenhum arquivo ainda. Toque em <b>Novo Python</b> ou <b>Novo SQL</b>.</div>';
+}
+$('#filelist').addEventListener('click', e => { const m = e.target.closest('[data-more]'); if (m) { e.stopPropagation(); fileMenu(m.dataset.more); return; } const r = e.target.closest('.row'); if (r) openFile(r.dataset.id); });
+$('#filelist').addEventListener('contextmenu', e => { const r = e.target.closest('.row'); if (r) { e.preventDefault(); fileMenu(r.dataset.id); } });
+
+const openSecs = new Set(['tables','views']); const openTables = new Set();
+function renderDbTree(){
+  const sec = (key, label, n) => `<div class="sec ${openSecs.has(key)?'':'closed'}" data-sec="${key}">${IC.chev}${label}<span class="cnt">${n}</span></div>`;
+  let h = sec('tables', 'Tabelas', schema.tables.length);
+  if (openSecs.has('tables')) h += schema.tables.map(t => {
+    const open = openTables.has(t.name);
+    return `<div class="row" data-t="${esc(t.name)}"><span class="exp ${open?'open':''}" data-exp="${esc(t.name)}">${IC.chevR}</span><span class="fbadge tbl">⊞</span><span class="nm">${esc(t.name)}<span class="sub">${t.count} registro${t.count===1?'':'s'} · ${t.cols.length} colunas</span></span><button class="more" data-tm="${esc(t.name)}">${IC.more}</button></div>` +
+      (open ? t.cols.map(c => `<div class="row col">${c.pk?'<span class="pk">🔑</span>':'<span style="width:14px;color:#555">•</span>'}<span class="nm">${esc(c.name)}</span><span class="ty">${esc(c.type||'—')}</span></div>`).join('') : '');
+  }).join('') || '<div class="card">Nenhuma tabela ainda. Crie uma com <b>CREATE TABLE</b>, importe um CSV ou abra seu banco .db.</div>';
+  if (schema.views.length) { h += sec('views', 'Views', schema.views.length);
+    if (openSecs.has('views')) h += schema.views.map(v => `<div class="row" data-t="${esc(v.name)}"><span class="exp"></span><span class="fbadge vw">👁</span><span class="nm">${esc(v.name)}<span class="sub">${v.cols.length} colunas</span></span><button class="more" data-tm="${esc(v.name)}">${IC.more}</button></div>`).join(''); }
+  if (schema.indexes.length) { h += sec('indexes', 'Índices', schema.indexes.length);
+    if (openSecs.has('indexes')) h += schema.indexes.map(i => `<div class="row" style="cursor:default"><span class="exp"></span><span class="fbadge ix">#</span><span class="nm">${esc(i.name)}<span class="sub">em ${esc(i.table)}</span></span></div>`).join(''); }
+  $('#dbtree').innerHTML = h;
+}
+$('#dbtree').addEventListener('click', e => {
+  const s = e.target.closest('[data-sec]'); if (s) { const k = s.dataset.sec; openSecs.has(k) ? openSecs.delete(k) : openSecs.add(k); renderDbTree(); return; }
+  const m = e.target.closest('[data-tm]'); if (m) { e.stopPropagation(); tableMenu(m.dataset.tm); return; }
+  const x = e.target.closest('[data-exp]'); if (x && x.dataset.exp) { const n = x.dataset.exp; openTables.has(n) ? openTables.delete(n) : openTables.add(n); renderDbTree(); return; }
+  const r = e.target.closest('[data-t]'); if (r) viewTable(r.dataset.t);
+});
+function tableMenu(name){
+  const t = schema.tables.find(x => x.name === name) || schema.views.find(x => x.name === name);
+  const isView = !schema.tables.some(x => x.name === name);
+  const ident = /^[A-Za-z_]\w*$/.test(name) ? name : qi(name);
+  sheet(`<span class="fbadge ${isView?'vw':'tbl'}">${isView?'👁':'⊞'}</span><span>${esc(name)}</span>`, [
+    { icon: IC.eye, label: 'Ver dados', run: () => viewTable(name) },
+    { icon: IC.code, label: 'Criar consulta SELECT', run: () => { const cols = t ? t.cols.map(c => '    ' + c.name).join(',\n') : '    *'; createFile(`select_${name}.sql`.replace(/[^\w.\-]/g,'_'), `SELECT\n${cols}\nFROM ${ident}\nLIMIT 100;\n`); } },
+    { icon: IC.wand, label: 'Ver estrutura (CREATE)', run: () => showResults([{ query: `Estrutura de ${name}`, msg: t && t.sql ? t.sql : '—', kind: 'code' }]) },
+    { icon: IC.down, label: 'Exportar como CSV', run: () => { try { const r = sqldb.exec(`SELECT * FROM ${qi(name)}`)[0]; downloadData(`${name}.csv`, toCSV(r ? r.columns : [], r ? r.values : [])); } catch (e) { toast(e.message, true); } } },
+    { icon: IC.copy, label: 'Copiar nome', run: () => copyText(name) },
+    { icon: IC.trash, label: isView ? 'Excluir view' : 'Excluir tabela', danger: true, run: async () => {
+      if (!await confirmBox(isView ? 'Excluir view?' : 'Excluir tabela?', `<b>${esc(name)}</b> e ${isView?'sua definição':'todos os seus dados'} serão apagados.`, 'Excluir')) return;
+      try { sqldb.run(`DROP ${isView?'VIEW':'TABLE'} ${qi(name)}`); dbChanged(); toast('Excluída ✓'); } catch (e) { toast(e.message, true); } } },
+  ]);
+}
+function renderChrome(){
+  const f = activeFile();
+  $('#fcIcon').innerHTML = f ? fbadge(f.name, true) : '';
+  $('#fcName').textContent = f ? f.name : 'Luna Studio';
+  $('#crumbs').innerHTML = f ? `<span>projeto</span><span>›</span>${fbadge(f.name, true)}<span style="color:var(--fg)">${esc(f.name)}</span>` : '';
+  const e = f ? extOf(f.name) : '';
+  $('#sbLang').textContent = e === 'py' ? 'Python' : e === 'sql' ? 'SQLite' : e ? e.toUpperCase() : '';
+  $('#runbtn').style.display = (e === 'py' || e === 'sql') ? '' : 'none';
+  $('#sbPy').style.display = e === 'py' ? '' : 'none';
+  document.title = f ? `${f.name} — Luna Studio` : 'Luna Studio — Python & SQL';
+}
+function renderLearn(){
+  $('#learnlist').innerHTML = SNIPPETS.map((s, i) => s.g ? `<div class="sec" style="cursor:default;margin-top:14px">${s.g==='SQL'?'Consultas SQL':'Python'}</div>` :
+    `<div class="snip" data-i="${i}">${fbadge(s.f)}<div><div class="st">${esc(s.t)}</div><div class="sd">${esc(s.d)}</div></div><span class="go">${IC.chevR}</span></div>`).join('') +
+    `<div class="card">Toque num exemplo para abri-lo e depois em <b>▶ Executar</b>. Todos usam o banco de exemplo: clientes, produtos, pedidos, itens_pedido e funcionarios.</div>`;
+}
+$('#learnlist').addEventListener('click', e => { const s = e.target.closest('[data-i]'); if (!s) return; const sn = SNIPPETS[+s.dataset.i]; createFile(sn.f, sn.c); });
+function renderSettings(){
+  $('#fsVal').textContent = dev.fontSize;
+  $('#setAc').checked = state.settings.autocomplete; $('#setWrap').checked = dev.wrap; $('#setKeys').checked = state.settings.keybar;
+  applySettings();
+}
+function applySettings(){
+  document.documentElement.style.setProperty('--fs', dev.fontSize + 'px');
+  cm.setOption('lineWrapping', !!dev.wrap);
+  $('#keybar').classList.toggle('enabled', !!state.settings.keybar);
+  cm.refresh();
+}
+$('#fsMinus').onclick = () => { dev.fontSize = Math.max(isTouch ? 16 : 11, dev.fontSize - 1); saveDev(); renderSettings(); };
+$('#fsPlus').onclick = () => { dev.fontSize = Math.min(24, dev.fontSize + 1); saveDev(); renderSettings(); };
+$('#setAc').onchange = e => { state.settings.autocomplete = e.target.checked; touchWs(); };
+$('#setWrap').onchange = e => { dev.wrap = e.target.checked; saveDev(); applySettings(); };
+$('#setKeys').onchange = e => { state.settings.keybar = e.target.checked; applySettings(); touchWs(); };
+function renderAll(){
+  renderTabs(); renderFiles(); renderChrome(); renderSettings();
+  const f = activeFile();
+  if (f) { cm.swapDoc(getDoc(f)); showEditor(true); cm.getWrapperElement().classList.toggle('py', extOf(f.name)==='py'); updateHints(); }
+  else showEditor(false);
+}
+
+/* Barra superior */
+$('#fileChip').onclick = () => {
+  if (isDesk()) return;
+  flushActive();
+  const items = state.files.map(f => ({ icon: fbadge(f.name), label: f.name + (f.id === state.active ? '  ✓' : ''), run: () => openFile(f.id) }));
+  items.push({ icon: IC.code, label: 'Novo arquivo Python', run: () => newFile('py') });
+  items.push({ icon: IC.db, label: 'Novo arquivo SQL', run: () => newFile('sql') });
+  sheet('<span>Abrir arquivo</span>', items);
+};
+$('#undoBtn').onclick = () => cm.undo();
+$('#moreBtn').onclick = () => {
+  const f = activeFile(); const items = [];
+  if (f && ['py','sql'].includes(extOf(f.name))) {
+    items.push({ icon: IC.play, label: 'Executar', run });
+    if (extOf(f.name) === 'sql') items.push({ icon: IC.play, label: 'Executar só a consulta do cursor', run: runCurrentStatement });
+  }
+  if (f) {
+    items.push({ icon: IC.redo, label: 'Refazer', run: () => cm.redo() });
+    items.push({ icon: IC.hash, label: 'Comentar / descomentar linha', run: () => cm.toggleComment() });
+    items.push({ icon: IC.copy, label: 'Copiar todo o código', run: () => copyText(cm.getValue()) });
+    items.push({ icon: IC.edit, label: 'Renomear arquivo', run: () => renameFile(f.id) });
+    items.push({ icon: IC.down, label: 'Baixar arquivo', run: () => downloadText(f) });
+  }
+  items.push({ icon: IC.gear, label: 'Ajustes', run: () => setView('settings') });
+  sheet(f ? `${fbadge(f.name)}<span>${esc(f.name)}</span>` : '<span>Menu</span>', items);
+};
+
+/* ---------------- Saída ---------------- */
+let ptab = 'term';
+function setPtab(t){
+  ptab = t;
+  $$('.seg button').forEach(b => b.classList.toggle('on', b.dataset.ptab === t));
+  $$('.pbody').forEach(b => b.classList.toggle('on', b.id === 'pb-' + t));
+  $('#repl').style.display = t === 'term' ? '' : 'none';
+  if (t === 'results') $('#resBadge').style.display = 'none';
+}
+$$('.seg button').forEach(b => b.onclick = () => { setPtab(b.dataset.ptab); if (isDesk() && outMin) { outMin = false; applyView(); } });
+$('#pToggle').onclick = () => { outMin = !outMin; applyView(); };
+$('#pClear').onclick = () => { if (ptab === 'term') { $('#term').innerHTML = ''; openLine = null; } else if (ptab === 'results') $('#results').innerHTML = '<div class="rempty">Sem resultados.</div>'; else $('#stdin').value = ''; };
+(() => {
+  const sash = $('#sash'); let startY, startH, dragging = false;
+  sash.addEventListener('pointerdown', e => { dragging = true; sash.setPointerCapture(e.pointerId); startY = e.clientY; startH = $('#v-out').getBoundingClientRect().height; outMin = false; });
+  sash.addEventListener('pointermove', e => { if (!dragging) return; const h = Math.max(44, Math.min(window.innerHeight - 160, startH + (startY - e.clientY))); document.documentElement.style.setProperty('--out-h', h + 'px'); appEl.classList.remove('out-min'); });
+  const end = () => { dragging = false; cm.refresh(); };
+  sash.addEventListener('pointerup', end); sash.addEventListener('pointercancel', end);
+})();
+let openLine = null, openCls = null;
+function newLine(cls){ const d = document.createElement('div'); d.className = 'ln ' + cls; $('#term').appendChild(d); openLine = d; openCls = cls; const t = $('#term'); while (t.childNodes.length > 4000) t.removeChild(t.firstChild); return d; }
+function termWrite(text, cls='out'){
+  const parts = String(text).split('\n');
+  for (let i = 0; i < parts.length; i++) {
+    if (i > 0) { if (!openLine) newLine(cls); openLine = null; }
+    if (parts[i]) { if (!openLine || openCls !== cls) newLine(cls); openLine.textContent += parts[i]; }
+  }
+  scrollTerm();
+}
+function termLine(text, cls='out'){ openLine = null; termWrite(text + '\n', cls); }
+function termNode(node){ openLine = null; $('#term').appendChild(node); scrollTerm(); }
+let scrollRaf; function scrollTerm(){ cancelAnimationFrame(scrollRaf); scrollRaf = requestAnimationFrame(() => { const b = $('#pb-term'); b.scrollTop = b.scrollHeight; }); }
+function flagOut(){ if (!isDesk() && view !== 'out') { const b = $('#outBadge'); b.textContent = '•'; b.classList.add('on'); } }
+
+let lastResults = [];
+function cellHTML(v){
+  if (v === null || v === undefined) return '<td class="null">NULL</td>';
+  if (typeof v === 'number') return `<td class="num">${Number.isInteger(v) ? v : +v.toFixed(10)}</td>`;
+  if (v instanceof Uint8Array) return `<td class="null">BLOB (${v.length} bytes)</td>`;
+  const s = String(v); return `<td>${esc(s.length > 300 ? s.slice(0,300)+'…' : s)}</td>`;
+}
+function tableHTML(cols, rows, max=2000){
+  return `<table class="rtable"><thead><tr><th class="rn">#</th>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.slice(0, max).map((r,i)=>`<tr><td class="rn">${i+1}</td>${r.map(cellHTML).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function showResults(blocks){
+  lastResults = blocks;
+  $('#results').innerHTML = blocks.map((b, i) => {
+    const head = `<div class="rhead"><span class="q">${esc(b.query.replace(/\s+/g,' ').slice(0,140))}</span><span class="n">${b.cols ? `${b.rows.length} linha${b.rows.length===1?'':'s'}` : ''}</span>${b.cols ? `<button class="ibtn" data-copy="${i}" title="Copiar CSV">${IC.copy}</button><button class="ibtn" data-csv="${i}" title="Baixar CSV">${IC.down}</button>` : ''}</div>`;
+    if (b.cols) return `<div class="rblock">${head}<div class="rwrap">${tableHTML(b.cols, b.rows)}</div>${b.rows.length > 2000 ? `<div class="rmsg" style="color:var(--fg2)">Mostrando 2000 de ${b.rows.length} linhas.</div>` : ''}${!b.rows.length ? '<div class="rmsg" style="color:var(--fg2)">(nenhuma linha)</div>' : ''}</div>`;
+    if (b.kind === 'code') return `<div class="rblock">${head}<pre class="rmsg" style="color:#d4d4d4;white-space:pre-wrap;margin:0">${esc(b.msg)}</pre></div>`;
+    return `<div class="rblock">${head}<div class="rmsg ${b.error?'err':'ok'}">${esc(b.msg)}</div></div>`;
+  }).join('') || '<div class="rempty">Nenhum resultado.</div>';
+  showOut('results');
+  $('#pb-results').scrollTop = 0;
+}
+$('#results').addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]'); if (c) { const b = lastResults[+c.dataset.copy]; copyText(toCSV(b.cols, b.rows)); return; }
+  const d = e.target.closest('[data-csv]'); if (d) { const b = lastResults[+d.dataset.csv]; downloadData('resultado.csv', toCSV(b.cols, b.rows)); }
+});
+function toCSV(cols, rows){
+  const f = v => { if (v === null || v === undefined || v instanceof Uint8Array) return ''; const s = String(v); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+  return [cols.map(f).join(','), ...rows.map(r => r.map(f).join(','))].join('\n');
+}
+
+/* ---------------- SQL ---------------- */
+async function viewTable(name){
+  try { await needSQL(); } catch (e) { toast(e.message, true); return; }
+  try {
+    const total = sqldb.exec(`SELECT COUNT(*) FROM ${qi(name)}`)[0].values[0][0];
+    const r = sqldb.exec(`SELECT * FROM ${qi(name)} LIMIT 500`)[0];
+    const cols = r ? r.columns : ((schema.tables.find(t=>t.name===name)||schema.views.find(t=>t.name===name)||{cols:[]}).cols.map(c=>c.name));
+    showResults([{ query: `${name} — ${total > 500 ? '500 de ' + total : total} registros`, cols, rows: r ? r.values : [] }]);
+  } catch (e) { showResults([{ query: name, msg: e.message, error: true }]); }
+}
+function stmtKind(sql){ return (sql.match(/^\w+/) || [''])[0].toUpperCase(); }
+async function runSQL(code, label){
+  await needSQL();
+  const blocks = []; const t0 = performance.now();
+  const sv = () => { try { return sqldb.exec('PRAGMA schema_version')[0].values[0][0] + ':' + sqldb.exec('SELECT total_changes()')[0].values[0][0]; } catch { return ''; } };
+  const before = sv();
+  termLine(`sqlite3 ${label}`, 'cmd');
+  let count = 0;
+  try {
+    for (const stmt of sqldb.iterateStatements(code)) {
+      const q = stmt.getSQL().replace(/^(\s|--[^\n]*\n?|\/\*[\s\S]*?\*\/)+/, '');
+      const cols = stmt.getColumnNames(); const rows = [];
+      while (stmt.step()) rows.push(stmt.get());
+      count++;
+      if (cols.length) blocks.push({ query: q, cols, rows });
+      else { const k = stmtKind(q); const n = sqldb.getRowsModified(); blocks.push({ query: q, msg: `✓ ${k || 'OK'}${/INSERT|UPDATE|DELETE|REPLACE/.test(k) ? ` — ${n} linha${n===1?'':'s'} afetada${n===1?'':'s'}` : ' executado com sucesso'}` }); }
+    }
+    if (!count) blocks.push({ query: '(vazio)', msg: 'Nenhuma instrução SQL para executar.' });
+    termLine(`✓ ${count} instrução(ões) em ${Math.round(performance.now()-t0)} ms`, 'ok');
+  } catch (e) {
+    blocks.push({ query: 'Erro', msg: '✗ ' + e.message, error: true });
+    termLine('✗ ' + e.message, 'err');
+  }
+  if (sv() !== before) dbChanged();
+  showResults(blocks);
+  const nRes = blocks.filter(b => b.cols).length;
+  if (nRes > 1) { const bd = $('#resBadge'); bd.textContent = nRes; }
+}
+
+/* ---------------- Python (Pyodide, embutido) ---------------- */
+let pyPromise = null, py = null, replNs = null;
+function setPyStatus(s){ $('#sbPy').textContent = { loading:'⟳ Python carregando…', ready:'Python 3.12', error:'Python indisponível', idle:'Python 3.12' }[s] || s; }
+setPyStatus('idle');
+const PRELUDE = `
+import sys, os, io, base64, builtins, warnings
+warnings.filterwarnings('ignore', message='.*[Pp]yarrow.*')
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+os.environ['MPLBACKEND'] = 'AGG'
+import cs_bridge
+
+def __cs_flush_figs():
+    if 'matplotlib.pyplot' in sys.modules:
+        import matplotlib.pyplot as plt
+        for n in plt.get_fignums():
+            fig = plt.figure(n)
+            buf = io.BytesIO()
+            fig.savefig(buf, format='png', dpi=110, bbox_inches='tight', facecolor='white')
+            cs_bridge.img(base64.b64encode(buf.getvalue()).decode())
+        plt.close('all')
+
+def __cs_patch_mpl():
+    import matplotlib
+    matplotlib.use('AGG')
+    import matplotlib.pyplot as plt
+    if getattr(plt.show, '__name__', '') != '__cs_show':
+        def __cs_show(*a, **k):
+            __cs_flush_figs()
+        plt.show = __cs_show
+
+def display(*objs):
+    for o in objs:
+        h = getattr(o, '_repr_html_', None)
+        if callable(h):
+            try:
+                html = h()
+                if html:
+                    cs_bridge.html(html)
+                    continue
+            except Exception:
+                pass
+        print(repr(o))
+builtins.display = display
+
+def __cs_repl(src, ns):
+    import ast
+    tree = ast.parse(src, '<terminal>')
+    last = None
+    if tree.body and isinstance(tree.body[-1], ast.Expr):
+        last = ast.Expression(tree.body.pop().value)
+    exec(compile(tree, '<terminal>', 'exec'), ns)
+    if last is not None:
+        r = eval(compile(last, '<terminal>', 'eval'), ns)
+        if r is not None:
+            ns['_'] = r
+            display(r)
+
+def __cs_clear_modules(names):
+    for n in names:
+        sys.modules.pop(n, None)
+`;
+function getPy(){
+  if (pyPromise) return pyPromise;
+  pyPromise = (async () => {
+    setPyStatus('loading');
+    let tries = 0; while (typeof loadPyodide !== 'function' && tries++ < 150) await new Promise(r => setTimeout(r, 100));
+    if (typeof loadPyodide !== 'function') throw new Error('o motor do Python não foi carregado (py/pyodide.js)');
+    const p = await loadPyodide({ indexURL: assetURL('py/') });
+    p.registerJsModule('cs_bridge', {
+      img: b64 => { const im = new Image(); im.src = 'data:image/png;base64,' + b64; termNode(im); },
+      html: h => { const d = document.createElement('div'); d.className = 'html'; d.innerHTML = h; d.querySelectorAll('script,iframe,style').forEach(x => x.remove()); termNode(d); },
+    });
+    const dec = new TextDecoder();
+    p.setStdout({ write: buf => { termWrite(dec.decode(buf), 'out'); return buf.length; } });
+    p.setStderr({ write: buf => { termWrite(dec.decode(buf), 'err'); return buf.length; } });
+    p.setStdin({ stdin: () => nextInput(), isatty: false });
+    await p.runPythonAsync(PRELUDE);
+    py = p; setPyStatus('ready');
+    return p;
+  })().catch(e => { pyPromise = null; setPyStatus('error'); throw e; });
+  return pyPromise;
+}
+let pyPreT; function schedulePyPreload(){ clearTimeout(pyPreT); pyPreT = setTimeout(() => getPy().catch(()=>{}), 2000); }
+let inputQueue = null;
+function nextInput(){
+  if (!inputQueue) return null;
+  if (!inputQueue.length) { termLine('\n[input] Sem mais entradas. Escreva as respostas na aba ENTRADA (uma por linha).', 'err'); return null; }
+  const v = inputQueue.shift(); termWrite(v + '\n', 'in'); return v + '\n';
+}
+const HOME = '/home/pyodide';
+function syncFilesToFS(p){
+  const names = new Set(state.files.map(f => f.name));
+  try { for (const n of p.FS.readdir(HOME)) { if (n === '.' || n === '..') continue; if (TEXT_EXT.includes(extOf(n)) && !names.has(n)) { try { p.FS.unlink(`${HOME}/${n}`); } catch {} } } } catch {}
+  const snap = new Map();
+  for (const f of state.files) { if (!TEXT_EXT.includes(extOf(f.name))) continue; try { p.FS.writeFile(`${HOME}/${f.name}`, f.content); snap.set(f.name, f.content); } catch {} }
+  return snap;
+}
+function syncFilesFromFS(p, snap){
+  let changed = 0;
+  try {
+    for (const n of p.FS.readdir(HOME)) {
+      if (!TEXT_EXT.includes(extOf(n))) continue;
+      const path = `${HOME}/${n}`; const st = p.FS.stat(path); if (!p.FS.isFile(st.mode) || st.size > 250000) continue;
+      const txt = p.FS.readFile(path, { encoding: 'utf8' });
+      if (snap.get(n) === txt) continue;
+      const f = state.files.find(x => x.name === n);
+      if (f) { if (f.content !== txt) { f.content = txt; f.updated = Date.now(); refreshDoc(f.id); pushFile(f.id); changed++; } }
+      else { const nf = { id: uid(), name: n, content: txt, updated: Date.now() }; state.files.push(nf); pushFile(nf.id); changed++; termLine(`📄 Arquivo criado: ${n} (veja em Arquivos)`, 'info'); }
+    }
+  } catch (e) { console.warn(e); }
+  if (changed) { persistLocalSoon(); renderFiles(); }
+}
+async function withPyEnv(code, fn){
+  const p = await getPy(); await needSQL();
+  const snap = syncFilesToFS(p);
+  const mods = state.files.filter(f => extOf(f.name) === 'py').map(f => f.name.slice(0, -3));
+  const pm = p.toPy(mods); p.globals.get('__cs_clear_modules')(pm); pm.destroy();
+  const before = sqldb.export(); const h0 = hashBytes(before);
+  p.FS.writeFile(`${HOME}/banco.db`, before);
+  try { p.FS.chdir(HOME); } catch {}
+  try {
+    if (/\b(sqlite3|pandas|read_sql)\b/.test(code)) await p.loadPackage('sqlite3', { messageCallback: () => {} });
+    await p.loadPackagesFromImports(code, { messageCallback: m => { if (/^Loading/.test(m)) termLine('⬇ ' + m.replace('Loading', 'Preparando'), 'dim'); }, errorCallback: () => {} });
+  } catch (e) { termLine('Aviso: ' + (e.message||e), 'dim'); }
+  if (/matplotlib/.test(code)) { try { p.globals.get('__cs_patch_mpl')(); } catch (e) {} }
+  try { return await fn(p); }
+  finally {
+    try { p.globals.get('__cs_flush_figs')(); } catch {}
+    try {
+      const after = p.FS.readFile(`${HOME}/banco.db`);
+      if (hashBytes(after) !== h0) { replaceDb(after, Date.now(), true); termLine('🗄 banco.db atualizado pelo Python', 'info'); }
+    } catch (e) { console.warn(e); }
+    syncFilesFromFS(p, snap);
+  }
+}
+function cleanTraceback(msg, fname){
+  const lines = String(msg).split('\n');
+  const idx = lines.findIndex(l => l.includes(`File "${fname}"`) || l.includes('File "<terminal>"') || l.includes('File "<exec>"'));
+  const out = idx >= 0 ? ['Traceback (most recent call last):', ...lines.slice(idx)] : lines.filter(l => !/_pyodide|pyodide\.asm|\/lib\/python3/.test(l));
+  return out.join('\n').replace(/\n+$/,'');
+}
+async function runPython(f, code){
+  inputQueue = $('#stdin').value.split('\n'); if (inputQueue.length && inputQueue[inputQueue.length-1] === '') inputQueue.pop();
+  termLine(`python ${f.name}`, 'cmd');
+  if (!py) termLine('Iniciando o Python… (na primeira vez leva alguns segundos)', 'dim');
+  const t0 = performance.now();
+  await withPyEnv(code, async p => {
+    const ns = p.globals.get('dict')();
+    ns.set('__name__', '__main__'); ns.set('__file__', f.name);
+    try {
+      await p.runPythonAsync(code, { globals: ns, filename: f.name });
+      openLine = null; termLine(`✓ Concluído em ${((performance.now()-t0)/1000).toFixed(2)} s`, 'ok');
+    } catch (e) {
+      openLine = null;
+      const tb = cleanTraceback(e.message, f.name);
+      termLine(tb, 'err');
+      const re = new RegExp(`File "${f.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}", line (\\d+)`, 'g');
+      const m = [...tb.matchAll(re)].pop();
+      if (state.active === f.id) { if (m) markErrLine(+m[1] - 1); else { const s = tb.match(/line (\d+)/); if (/SyntaxError|IndentationError/.test(tb) && s) markErrLine(+s[1]-1); } }
+    }
+    if (replNs) { try { replNs.destroy(); } catch {} }
+    replNs = ns;
+  });
+  inputQueue = null;
+}
+
+/* ---------------- Executar ---------------- */
+let running = false;
+function setBusy(b){ running = b; $('#runbtn').classList.toggle('busy', b); $('#runlbl').textContent = b ? 'Executando…' : 'Executar'; }
+async function run(){
+  const f = activeFile(); if (!f || running) return;
+  const e = extOf(f.name); if (e !== 'py' && e !== 'sql') { toast('Só é possível executar arquivos .py ou .sql'); return; }
+  flushActive();
+  const sel = cm.somethingSelected() ? cm.getSelection() : null;
+  const code = sel && sel.trim() ? sel : cm.getValue();
+  setBusy(true);
+  if (isTouch) { try { cm.getInputField().blur(); } catch {} body.classList.remove('edfocus','typing'); }
+  if (e === 'py') showOut('term');
+  await new Promise(r => setTimeout(r, 40));
+  try {
+    if (e === 'sql') await runSQL(code, sel ? `${f.name} (seleção)` : f.name);
+    else await runPython(f, code);
+  } catch (err) {
+    termLine('✗ ' + (err.message || err), 'err'); showOut('term');
+  } finally { setBusy(false); }
+}
+$('#runbtn').onclick = run;
+async function runCurrentStatement(){
+  const text = cm.getValue(); const pos = cm.indexFromPos(cm.getCursor());
+  const start = text.lastIndexOf(';', pos - 1) + 1; let end = text.indexOf(';', pos); end = end < 0 ? text.length : end + 1;
+  const f = activeFile(); setBusy(true);
+  try { await runSQL(text.slice(start, end), f.name + ' (consulta atual)'); } catch (e) { toast(e.message, true); } finally { setBusy(false); }
+}
+
+/* Terminal interativo */
+let replLang = 'py'; const replHist = []; let histI = -1;
+$('#replLang').onclick = () => { replLang = replLang === 'py' ? 'sql' : 'py'; const b = $('#replLang'); b.textContent = replLang.toUpperCase(); b.classList.toggle('sql', replLang === 'sql'); $('#replin').placeholder = replLang === 'py' ? 'Comando Python…' : 'Comando SQL…'; };
+async function replRun(){
+  const inp = $('#replin'); const src = inp.value; if (!src.trim()) return;
+  replHist.push(src); histI = -1; inp.value = '';
+  try {
+    if (replLang === 'sql') { await runSQL(src, '(terminal)'); return; }
+    termLine(src, 'cmd');
+    if (!py) termLine('Iniciando o Python…', 'dim');
+    await withPyEnv(src, async p => {
+      if (!replNs) { replNs = p.globals.get('dict')(); replNs.set('__name__', '__main__'); }
+      try { await p.globals.get('__cs_repl')(src, replNs); openLine = null; }
+      catch (err) { openLine = null; termLine(cleanTraceback(err.message, '<terminal>'), 'err'); }
+    });
+  } catch (err) { termLine('✗ ' + (err.message || err), 'err'); }
+}
+$('#replgo').onclick = replRun;
+$('#replin').addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp') { if (replHist.length) { histI = Math.max(0, (histI < 0 ? replHist.length : histI) - 1); e.target.value = replHist[histI]; } e.preventDefault(); return; }
+  if (e.key === 'ArrowDown') { if (histI >= 0) { histI++; e.target.value = histI < replHist.length ? replHist[histI] : ''; if (histI >= replHist.length) histI = -1; } e.preventDefault(); return; }
+  if (e.key === 'Enter') { e.preventDefault(); replRun(); }
+});
+
+/* ---------------- Importar / exportar ---------------- */
+let fileMode = 'any';
+function pickFile(mode){ fileMode = mode; const i = $('#fileIn'); i.removeAttribute('accept'); i.multiple = mode === 'any'; i.click(); }
+$('#upload').onclick = () => pickFile('any');
+$('#dbImportCsv').onclick = () => pickFile('csv');
+$('#dbImportDb').onclick = () => pickFile('db');
+$('#fileIn').onchange = async e => {
+  const files = [...e.target.files]; e.target.value = '';
+  for (const file of files) {
+    try {
+      const buf = new Uint8Array(await file.arrayBuffer());
+      if (isSqliteFile(buf)) {
+        await needSQL();
+        if (!await confirmBox('Usar este banco de dados?', `O banco atual será substituído por <b>${esc(file.name)}</b>. Se quiser guardar o atual, use antes "Exportar projeto".`, 'Usar este banco', false)) continue;
+        if (replaceDb(buf, Date.now(), true)) { idb.set('db', buf); openSecs.add('tables'); toast('Banco carregado ✓'); setView('db'); }
+      } else if (fileMode === 'db') {
+        toast(`${file.name} não é um banco SQLite (.db/.sqlite).`, true);
+      } else if (fileMode === 'csv' || (extOf(file.name) === 'csv' && fileMode === 'csv')) {
+        await csvToTable(file.name, new TextDecoder().decode(buf));
+      } else {
+        if (file.size > 250000) { toast(`${file.name}: muito grande (máx. 250 KB)`, true); continue; }
+        createFile(file.name.replace(/[^\w\-. ()À-ú]/g, '_'), new TextDecoder().decode(buf), files.length === 1);
+        toast(`${file.name} importado ✓`);
+      }
+    } catch (err) { toast(err.message || String(err), true); }
+  }
+};
+function parseCSV(text){
+  text = text.replace(/^﻿/, '');
+  const first = text.split('\n')[0]; const delim = (first.match(/;/g)||[]).length > (first.match(/,/g)||[]).length ? ';' : (first.includes('\t') && !first.includes(',') ? '\t' : ',');
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i+1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === delim) { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i+1] === '\n') i++; row.push(cur); cur = ''; if (row.length > 1 || row[0] !== '') rows.push(row); row = []; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+async function csvToTable(fname, text){
+  await needSQL();
+  const rows = parseCSV(text); if (rows.length < 1) { toast('CSV vazio', true); return; }
+  const header = rows[0].map((h, i) => (h.trim() || `coluna_${i+1}`).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\w]/g, '_').replace(/^(\d)/, '_$1').toLowerCase());
+  const seen = {}; header.forEach((h, i) => { if (seen[h]) header[i] = `${h}_${++seen[h]}`; else seen[h] = 1; });
+  const data = rows.slice(1);
+  const types = header.map((_, ci) => {
+    let t = 'INTEGER';
+    for (const r of data) { const v = (r[ci] ?? '').trim(); if (v === '') continue; if (t === 'INTEGER' && !/^-?\d+$/.test(v)) t = 'REAL'; if (t === 'REAL' && !/^-?\d*[.,]?\d+(e-?\d+)?$/i.test(v)) { t = 'TEXT'; break; } }
+    return t;
+  });
+  const base = fname.replace(/\.[^.]+$/, '').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\w]/g, '_').replace(/^(\d)/, 't_$1').toLowerCase() || 'tabela';
+  const tname = await ask({ title: 'Importar CSV como tabela', msg: `${data.length} linhas · ${header.length} colunas (${esc(header.slice(0,5).join(', '))}${header.length>5?'…':''})`, value: base, ok: 'Importar', validate: v => !/^[A-Za-z_]\w*$/.test(v) ? 'Use letras, números e _ (sem espaços).' : schema.tables.some(t => t.name.toLowerCase() === v.toLowerCase()) ? 'Já existe uma tabela com esse nome.' : null });
+  if (!tname) return;
+  try {
+    sqldb.run('BEGIN');
+    sqldb.run(`CREATE TABLE ${qi(tname)} (${header.map((h, i) => `${qi(h)} ${types[i]}`).join(', ')})`);
+    const st = sqldb.prepare(`INSERT INTO ${qi(tname)} VALUES (${header.map(() => '?').join(',')})`);
+    for (const r of data) st.run(header.map((_, i) => { const v = (r[i] ?? '').trim(); if (v === '') return null; if (types[i] === 'INTEGER') return parseInt(v, 10); if (types[i] === 'REAL') return parseFloat(v.replace(',', '.')); return v; }));
+    st.free(); sqldb.run('COMMIT');
+    dbChanged(); toast(`Tabela ${tname} criada com ${data.length} linhas ✓`);
+    viewTable(tname);
+  } catch (e) { try { sqldb.run('ROLLBACK'); } catch {} toast(e.message, true); }
+}
+function downloadData(filename, data){
+  try {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (e) { toast('Não foi possível baixar: ' + (e.message || e), true); }
+}
+function downloadText(f){
+  if (f.id === state.active) flushActive();
+  const ext = extOf(f.name);
+  downloadData(f.name, f.content);
+}
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8){ let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(entries){
+  const enc = new TextEncoder(); const parts = []; const central = []; let offset = 0;
+  const d = new Date(); const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1); const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth()+1) << 5) | d.getDate();
+  for (const e of entries) {
+    const name = enc.encode(e.name); const data = typeof e.data === 'string' ? enc.encode(e.data) : e.data; const crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true); lh.setUint16(10, time, true); lh.setUint16(12, date, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true); ch.setUint16(12, time, true); ch.setUint16(14, date, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    offset += 30 + name.length + data.length;
+  }
+  const cdSize = central.reduce((s, p) => s + p.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: 'application/zip' });
+}
+$('#dbExport').onclick = async () => {
+  flushActive(); try { await needSQL(); } catch (e) { toast(e.message, true); return; }
+  downloadData('code-studio-projeto.zip', makeZip([...state.files.map(f => ({ name: f.name, data: f.content })), { name: 'banco.db', data: sqldb.export() }]));
+};
+$('#dbSample').onclick = async () => {
+  if (!await confirmBox('Restaurar banco de exemplo?', 'O banco atual será substituído pelo banco de exemplo. Suas tabelas atuais serão perdidas.', 'Restaurar')) return;
+  await needSQL(); const nd = new SQL.Database(); nd.exec(sampleSQL()); const bytes = nd.export(); nd.close();
+  replaceDb(bytes, Date.now(), true); idb.set('db', bytes); toast('Banco de exemplo restaurado ✓');
+};
+$('#dbRefresh').onclick = () => { refreshSchema(); toast('Atualizado'); };
+$('#dbNewQuery').onclick = () => { const t = schema.tables[0]; createFile('consulta.sql', `SELECT *\nFROM ${t ? t.name : 'tabela'}\nLIMIT 100;\n`); };
+$('#newPy').onclick = () => newFile('py');
+$('#newSql').onclick = () => newFile('sql');
+$('#emptyPy').onclick = () => newFile('py');
+$('#emptySql').onclick = () => newFile('sql');
+$('#syncChip').onclick = () => { if (gh.token) syncNow(); setView('settings'); };
+$('#resetAll').onclick = async () => {
+  if (!await confirmBox('Apagar tudo?', 'Todos os arquivos serão apagados e o banco volta ao exemplo — inclusive a cópia salva na nuvem.', 'Apagar tudo')) return;
+  for (const f of state.files) { (state.deletedPaths = state.deletedPaths || []).push('arquivos/' + f.name); }
+  state.files = DEFAULT_FILES().map(f => ({ ...f, id: uid(), updated: Date.now() }));
+  docs.clear(); state.open = state.files.map(f => f.id); state.active = state.files[1].id;
+  state.files.forEach(f => pushFile(f.id));
+  await needSQL(); const nd = new SQL.Database(); nd.exec(sampleSQL()); const bytes = nd.export(); nd.close();
+  replaceDb(bytes, Date.now(), true); idb.set('db', bytes);
+  $('#term').innerHTML = ''; touchWs(); renderAll(); setView('code'); toast('Tudo recomeçado ✓');
+};
+
+/* Salvar ao sair */
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { flushActive(); persistLocalNow(); if (sqldb) idb.set('db', sqldb.export()); } });
+window.addEventListener('pagehide', () => { flushActive(); persistLocalNow(); });
+
+/* ---------------- Início ---------------- */
+(async () => {
+  setAppHeight();
+  await loadLocal();
+  renderLearn(); renderAll();
+  if (state.active) openFile(state.active, {silent:true, stay:true}); else showEditor(false);
+  applyView(); setPtab('term');
+  termLine('Luna Studio — Python 3.12 + SQLite', 'info');
+  termLine('Toque em ▶ Executar para rodar o arquivo aberto. Aqui embaixo você também pode digitar comandos.', 'dim');
+  renderSyncCard();
+  setTimeout(() => $('#loading').classList.add('hide'), 150);
+  await sqlReady;
+  initCloud();
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+
+</script>
+</body>
+</html>
