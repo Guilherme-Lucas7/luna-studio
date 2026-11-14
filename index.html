@@ -1370,6 +1370,23 @@ with open("relatorio.csv", "w", newline="", encoding="utf-8") as f:
     w.writerows(linhas)
 
 print("✔ relatorio.csv criado — veja no Explorador!")`},
+ {t:'Machine learning (scikit-learn)', d:'Prever valores com regressão', f:'ml_regressao.py', c:`import sqlite3
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+con = sqlite3.connect("banco.db")
+df = pd.read_sql_query("SELECT salario, (julianday('now') - julianday(admissao)) / 365.25 AS anos_casa FROM funcionarios", con)
+con.close()
+
+X = df[["anos_casa"]]
+y = df["salario"]
+X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.3, random_state=42)
+
+modelo = LinearRegression().fit(X_treino, y_treino)
+print("Coeficiente (R$ por ano de casa):", round(modelo.coef_[0], 2))
+print("Score no teste:", round(modelo.score(X_teste, y_teste), 3))
+print("Previsão para 5 anos de casa: R$", round(modelo.predict(pd.DataFrame({"anos_casa": [5]}))[0], 2))`},
  {t:'input()', d:'Ler dados do usuário', f:'entrada.py', c:`# Escreva as respostas na aba ENTRADA (uma por linha) antes de executar
 nome = input("Qual seu nome? ")
 idade = int(input("Qual sua idade? "))
@@ -2249,6 +2266,7 @@ function syncFilesFromFS(p, snap){
 }
 async function withPyEnv(code, fn){
   const p = await getPy(); await needSQL();
+  await pipRestore(p);
   const snap = syncFilesToFS(p);
   const mods = state.files.filter(f => extOf(f.name) === 'py').map(f => f.name.slice(0, -3));
   const pm = p.toPy(mods); p.globals.get('__cs_clear_modules')(pm); pm.destroy();
@@ -2277,6 +2295,8 @@ function cleanTraceback(msg, fname){
   return out.join('\n').replace(/\n+$/,'');
 }
 async function runPython(f, code){
+  const pipLines = code.split('\n').filter(l => /^\s*[!%]\s*pip3?\s+install/i.test(l));
+  if (pipLines.length) { const p = await getPy(); for (const l of pipLines) { const n = pipParse(l); if (n) { termLine(l.trim(), 'cmd'); await pipInstall(p, n); } } code = code.split('\n').map(l => /^\s*[!%]\s*pip3?\s+install/i.test(l) ? '# ' + l.trim() : l).join('\n'); }
   inputQueue = $('#stdin').value.split('\n'); if (inputQueue.length && inputQueue[inputQueue.length-1] === '') inputQueue.pop();
   termLine(`python ${f.name}`, 'cmd');
   if (!py) termLine('Iniciando o Python… (na primeira vez leva alguns segundos)', 'dim');
@@ -2299,6 +2319,43 @@ async function runPython(f, code){
     replNs = ns;
   });
   inputQueue = null;
+}
+
+
+/* pip install dentro do app */
+const PIP_KEY = 'codestudio:pip';
+let pipPkgs = (() => { try { return JSON.parse(lsGet0(PIP_KEY)) || []; } catch { return []; } })();
+let pipRestored = false;
+const PIP_ALIAS = { sklearn: 'scikit-learn', 'scikit_learn': 'scikit-learn', cv2: 'opencv-python', pil: 'pillow', bs4: 'beautifulsoup4' };
+function pipParse(line){
+  const m = String(line).trim().match(/^[!%]?\s*(?:python3?\s+-m\s+|py\s+-m\s+)?pip3?\s+install\s+(.+)$/i);
+  if (!m) return null;
+  return m[1].split(/\s+/).filter(x => x && !x.startsWith('-')).map(x => x.replace(/[<>=!~].*$/, ''));
+}
+async function pipInstall(p, names, quiet=false){
+  for (let raw of names) {
+    const name = PIP_ALIAS[raw.toLowerCase()] || raw.toLowerCase().replace(/_/g, '-');
+    if (!quiet) termLine(`⬇ Instalando ${name}…`, 'dim');
+    let errs = [];
+    try { await p.loadPackage(name, { messageCallback: () => {}, errorCallback: m => errs.push(m) }); } catch (e) { errs.push(String(e)); }
+    const builtIn = Object.keys(p.loadedPackages).some(k => k.toLowerCase() === name);
+    if (builtIn) { if (!quiet) termLine(`✓ ${name} pronto (já vem no Luna Studio)`, 'ok'); continue; }
+    try {
+      await p.loadPackage('micropip', { messageCallback: () => {} });
+      const mp = p.pyimport('micropip');
+      await mp.install(name); mp.destroy();
+      if (!pipPkgs.includes(name)) { pipPkgs.push(name); try { localStorage.setItem(PIP_KEY, JSON.stringify(pipPkgs)); } catch {} }
+      if (!quiet) termLine(`✓ ${name} instalado`, 'ok');
+    } catch (e) {
+      if (!quiet) termLine(`✗ Não foi possível instalar ${name}: só funcionam pacotes em Python puro (ou os que já vêm no app) e é preciso internet.`, 'err');
+    }
+  }
+}
+async function pipRestore(p){
+  if (pipRestored || !pipPkgs.length || !navigator.onLine) { pipRestored = true; return; }
+  pipRestored = true;
+  termLine(`⬇ Recarregando pacotes instalados: ${pipPkgs.join(', ')}`, 'dim');
+  await pipInstall(p, pipPkgs, true);
 }
 
 /* ---------------- Executar ---------------- */
@@ -2337,6 +2394,8 @@ async function replRun(){
   const inp = $('#replin'); const src = inp.value; if (!src.trim()) return;
   replHist.push(src); histI = -1; inp.value = '';
   try {
+    const pipNames = pipParse(src);
+    if (pipNames) { termLine(src, 'cmd'); if (!py) termLine('Iniciando o Python…', 'dim'); await pipInstall(await getPy(), pipNames); return; }
     if (replLang === 'sql') { await runSQL(src, '(terminal)'); return; }
     termLine(src, 'cmd');
     if (!py) termLine('Iniciando o Python…', 'dim');
