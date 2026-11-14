@@ -1763,6 +1763,20 @@ function checkTyping(){
 }
 window.addEventListener('resize', () => { baseH = Math.max(window.innerHeight, baseH); setAppHeight(); applyView(); });
 
+
+/* Lembra onde você parou em cada arquivo (rolagem e cursor) */
+const scrollMem = {}; let restoring = false;
+cm.on('scroll', () => {
+  if (restoring || !state.active || !cm.getWrapperElement().offsetParent) return;
+  const s = cm.getScrollInfo(); scrollMem[state.active] = { top: s.top, left: s.left };
+});
+function restoreScroll(){
+  const id = state.active; const s = id && scrollMem[id];
+  restoring = true;
+  const apply = () => { cm.refresh(); if (s) cm.scrollTo(s.left, s.top); };
+  requestAnimationFrame(() => { apply(); requestAnimationFrame(() => { apply(); setTimeout(() => { if (s) cm.scrollTo(s.left, s.top); restoring = false; }, 60); }); });
+}
+
 /* ---------------- Navegação entre telas ---------------- */
 let view = 'code', sideView = 'files', sideOpen = (() => { try { return localStorage.getItem('codestudio:side') !== '0'; } catch { return true; } })(), outMin = false;
 const TITLES = { files:'Arquivos', db:'Banco de dados', learn:'Aprender', settings:'Ajustes', out:'Saída' };
@@ -1787,7 +1801,7 @@ function applyView(){
   appEl.classList.toggle('out-min', isDesk() && outMin);
   $$('.nb').forEach(b => b.classList.toggle('on', isDesk() ? (sideOpen && b.dataset.v === sideView) : b.dataset.v === view));
   $('#vtitle').textContent = TITLES[view] || '';
-  setTimeout(() => cm.refresh(), 30);
+  if (isDesk() || view === 'code') restoreScroll(); else setTimeout(() => cm.refresh(), 30);
 }
 $$('.nb').forEach(b => b.onclick = () => setView(b.dataset.v));
 function showOut(tab){
@@ -1810,7 +1824,7 @@ function openFile(id, {silent=false, stay=false}={}){
   if (!silent) touchWs();
   if (extOf(f.name) === 'py') schedulePyPreload();
   if (!isDesk() && !stay && view !== 'code') setView('code');
-  setTimeout(() => cm.refresh(), 0);
+  else restoreScroll();
 }
 function showEditor(on){ cm.getWrapperElement().style.display = on ? '' : 'none'; $('#empty').classList.toggle('on', !on); $('#runbtn').style.visibility = on ? '' : 'hidden'; }
 function closeTab(id){
@@ -2297,6 +2311,7 @@ async function run(){
   const sel = cm.somethingSelected() ? cm.getSelection() : null;
   const code = sel && sel.trim() ? sel : cm.getValue();
   setBusy(true);
+  if (state.active) { const si = cm.getScrollInfo(); scrollMem[state.active] = { top: si.top, left: si.left }; }
   if (isTouch) { try { cm.getInputField().blur(); } catch {} body.classList.remove('edfocus','typing'); }
   if (e === 'py') showOut('term');
   await new Promise(r => setTimeout(r, 40));
