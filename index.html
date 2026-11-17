@@ -623,6 +623,17 @@ body.touch.edfocus #keybar.enabled{display:flex}
 #v-code.tabs-hidden #tabsbar{display:none}
 #v-code.tabs-hidden #tabsShow{display:flex}
 #sideShow{display:none}
+#editbar{flex:none;display:none;gap:6px;padding:7px 8px 0;background:#1b1724;overflow-x:auto;scrollbar-width:none;border-top:1px solid var(--line2)}
+#editbar::-webkit-scrollbar{display:none}
+body.touch.edfocus #editbar.enabled{display:flex}
+body.touch.edfocus.bars #runbtn{display:none}
+body.touch.edfocus #editbar.enabled + #keybar{border-top:0}
+#editbar button{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:10px;background:#2e2740;color:#f0f0f0;font-size:14px;font-weight:600;white-space:nowrap;user-select:none;-webkit-user-select:none}
+#editbar button svg{flex:none}
+#editbar button:active{background:var(--accent)}
+#editbar button.go{background:linear-gradient(135deg,#a855f7,#ec4899)}
+#editbar button.danger{color:#ff9db0}
+#editbar .sep{flex:none;width:1px;background:var(--line2);margin:6px 2px}
 /* Sheets, diálogos, toast */
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
 #overlay.on{display:flex}
@@ -832,7 +843,7 @@ li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
           <div class="setting"><div class="lbl">Tamanho da fonte</div><div class="stepper"><button id="fsMinus">−</button><b id="fsVal">14</b><button id="fsPlus">+</button></div></div>
           <div class="setting"><div class="lbl">Autocompletar ao digitar<div class="desc">Sugestões de comandos e nomes de tabelas</div></div><label class="switch"><input type="checkbox" id="setAc"><span></span></label></div>
           <div class="setting"><div class="lbl">Quebrar linhas longas</div><label class="switch"><input type="checkbox" id="setWrap"><span></span></label></div>
-          <div class="setting"><div class="lbl">Barra de símbolos<div class="desc">Tab, ( ) : = " etc. acima do teclado</div></div><label class="switch"><input type="checkbox" id="setKeys"><span></span></label></div>
+          <div class="setting"><div class="lbl">Barras de edição e símbolos<div class="desc">Copiar, colar, apagar e Tab, ( ) : = " acima do teclado</div></div><label class="switch"><input type="checkbox" id="setKeys"><span></span></label></div>
           <div class="pane-h" style="padding-left:6px"><span class="t">Sincronização</span></div><div class="card synccard" id="syncCard"></div>
           <div class="card"><b>Instalar como app:</b><br>• iPhone/iPad: no Safari, toque em <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b>.<br>• Android: no Chrome, <b>⋮</b> → <b>Instalar app</b>.<br>• Computador: no Chrome/Edge, ícone de instalar na barra de endereço.</div>
           <div class="card" style="font-size:12.5px">Atalhos no computador: <b>Ctrl+Enter</b> executar · <b>Ctrl+/</b> comentar · <b>Ctrl+Espaço</b> sugestões</div>
@@ -857,6 +868,7 @@ li.CodeMirror-hint-active{background:#5b2a91;color:#fff}
         <svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 12a9 9 0 1 1-6.2-8.6"/></svg>
         <span id="runlbl">Executar</span>
       </button>
+      <div id="editbar"></div>
       <div id="keybar"></div>
     </section>
 
@@ -922,8 +934,6 @@ const assetURL = p => new URL(p, location.href).href;
 // Bloqueia zoom por gesto (iOS) e duplo toque
 ['gesturestart','gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive:false }));
 document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive:false });
-let lastTouchEnd = 0;
-document.addEventListener('touchend', e => { const now = Date.now(); if (now - lastTouchEnd < 300 && !e.target.closest('.CodeMirror')) e.preventDefault(); lastTouchEnd = now; }, { passive:false });
 
 /* ---------------- Ícones ---------------- */
 const IC = {
@@ -1755,7 +1765,7 @@ function clearErrLine(){ if (errMark !== null) { try { cm.removeLineClass(errMar
 function markErrLine(n){ clearErrLine(); if (n < 0 || n >= cm.lineCount()) return; errMark = cm.addLineClass(n, 'background', 'cm-errline'); }
 
 /* Barra de símbolos */
-const KEYS = [['▶','run','w go'],['⇥','tab','w'],['(','('],[')',')'],[':',':'],['=','='],['"','"'],["'","'"],['[','['],[']',']'],['{','{'],['}','}'],['_','_'],['.','.'],[',',','],['#','#'],['<','<'],['>','>'],['+','+'],['-','-'],['*','*'],['/','/'],[';',';'],['%','%'],['←','left','w'],['→','right','w'],['↶','undo','w'],['↷','redo','w']];
+const KEYS = [['⇥','tab','w'],['(','('],[')',')'],[':',':'],['=','='],['"','"'],["'","'"],['[','['],[']',']'],['{','{'],['}','}'],['_','_'],['.','.'],[',',','],['#','#'],['<','<'],['>','>'],['+','+'],['-','-'],['*','*'],['/','/'],[';',';'],['%','%'],['←','left','w'],['→','right','w'],['↑','up','w'],['↓','down','w']];
 $('#keybar').innerHTML = KEYS.map(k => `<button class="${k[2]||''}" data-k="${esc(k[1])}">${esc(k[0])}</button>`).join('');
 $('#keybar').addEventListener('pointerdown', e => {
   const b = e.target.closest('button'); if (!b) return; e.preventDefault();
@@ -1764,11 +1774,86 @@ $('#keybar').addEventListener('pointerdown', e => {
   if (k === 'tab') cm.somethingSelected() ? cm.execCommand('indentMore') : cm.replaceSelection('    ');
   else if (k === 'left') cm.execCommand('goCharLeft');
   else if (k === 'right') cm.execCommand('goCharRight');
+  else if (k === 'up') cm.execCommand('goLineUp');
+  else if (k === 'down') cm.execCommand('goLineDown');
   else if (k === 'undo') cm.undo();
   else if (k === 'redo') cm.redo();
   else cm.replaceSelection(k);
   if (!cm.hasFocus()) cm.focus();
 });
+
+
+/* Barra de edição (tablet/celular): selecionar, copiar, colar, apagar */
+const EI = {
+  run:'<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>',
+  sel:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.5"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/></svg>',
+  line:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 12h16"/><path d="M4 6h10M4 18h12" opacity=".35"/></svg>',
+  copy:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg>',
+  cut:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.2 15.8L19 4M15.8 15.8L5 4"/></svg>',
+  paste:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4"/><path d="M9 11h6M9 15h4"/></svg>',
+  bksp:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12z"/><path d="M12 9.5l5 5M17 9.5l-5 5"/></svg>',
+  delline:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="8" width="18" height="8" rx="2"/><path d="M3 21h18" opacity=".35"/><path d="M3 3h18" opacity=".35"/></svg>',
+  clear:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg>',
+  undo:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+  redo:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>',
+};
+const EDIT = [
+  ['run','Executar','go'], '|',
+  ['bksp','Apagar'], ['copy','Copiar'], ['paste','Colar'], ['cut','Recortar'], '|',
+  ['selall','Selecionar tudo','', 'sel'], ['selline','Selecionar linha','', 'line'], '|',
+  ['delline','Apagar linha'], ['clear','Apagar tudo','danger'], '|',
+  ['undo','Desfazer'], ['redo','Refazer'],
+];
+$('#editbar').innerHTML = EDIT.map(e => e === '|' ? '<span class="sep"></span>' : `<button class="${e[2]||''}" data-e="${e[0]}">${EI[e[3]||e[0]]||''}<span>${e[1]}</span></button>`).join('');
+let clipMem = '';
+function writeClip(t){
+  clipMem = t;
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(() => fallbackCopy(t));
+  fallbackCopy(t); return Promise.resolve();
+}
+function fallbackCopy(t){ const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch {} ta.remove(); cm.focus(); }
+function currentLineRange(){ const from = cm.getCursor('from'), to = cm.getCursor('to'); const last = to.line; const endLine = (to.ch === 0 && to.line > from.line) ? last - 1 : last; return { from: CodeMirror.Pos(from.line, 0), to: endLine + 1 < cm.lineCount() ? CodeMirror.Pos(endLine + 1, 0) : CodeMirror.Pos(endLine, cm.getLine(endLine).length) }; }
+async function editAction(k){
+  switch (k) {
+    case 'run': run(); return;
+    case 'selall': cm.execCommand('selectAll'); break;
+    case 'selline': { const r = currentLineRange(); cm.setSelection(r.from, r.to); break; }
+    case 'copy': case 'cut': {
+      let text, r = null;
+      if (cm.somethingSelected()) text = cm.getSelection();
+      else { r = currentLineRange(); text = cm.getRange(r.from, r.to); if (!text.endsWith('\n')) text += '\n'; }
+      await writeClip(text);
+      if (k === 'cut') { if (r) cm.replaceRange('', r.from, r.to); else cm.replaceSelection(''); }
+      toast(k === 'cut' ? 'Recortado ✓' : (r ? 'Linha copiada ✓' : 'Copiado ✓'));
+      break;
+    }
+    case 'paste': {
+      let t = null;
+      try { if (navigator.clipboard && navigator.clipboard.readText) t = await navigator.clipboard.readText(); } catch {}
+      if (t == null || t === '') t = clipMem || null;
+      if (t == null) { toast('Para colar: toque e segure no código e escolha "Colar"'); break; }
+      cm.replaceSelection(t); break;
+    }
+    case 'delline': { const r = currentLineRange(); cm.replaceRange('', r.from, r.to); break; }
+    case 'clear': cm.execCommand('selectAll'); cm.replaceSelection(''); toast('Tudo apagado — toque em Desfazer para voltar'); break;
+    case 'undo': cm.undo(); break;
+    case 'redo': cm.redo(); break;
+  }
+  if (!cm.hasFocus()) cm.focus();
+}
+(() => {
+  const bar = $('#editbar'); let rep = null, repT = null;
+  const stop = () => { clearTimeout(repT); clearInterval(rep); repT = rep = null; };
+  bar.addEventListener('pointerdown', e => {
+    const b = e.target.closest('button'); if (!b) return; e.preventDefault();
+    if (b.dataset.e === 'bksp') { // apagar: segura para apagar várias
+      cm.somethingSelected() ? cm.replaceSelection('') : cm.execCommand('delCharBefore');
+      repT = setTimeout(() => { rep = setInterval(() => cm.execCommand('delCharBefore'), 60); }, 420);
+    }
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev => bar.addEventListener(ev, stop));
+  bar.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.e === 'bksp') return; editAction(b.dataset.e); });
+})();
 
 /* Altura real da tela (teclado virtual) */
 function setAppHeight(){ cm.refresh(); }
@@ -1998,6 +2083,8 @@ function applySettings(){
   document.documentElement.style.setProperty('--fs', dev.fontSize + 'px');
   cm.setOption('lineWrapping', !!dev.wrap);
   $('#keybar').classList.toggle('enabled', !!state.settings.keybar);
+  $('#editbar').classList.toggle('enabled', !!state.settings.keybar);
+  body.classList.toggle('bars', !!state.settings.keybar);
   cm.refresh();
 }
 $('#fsMinus').onclick = () => { dev.fontSize = Math.max(isTouch ? 16 : 11, dev.fontSize - 1); saveDev(); renderSettings(); };
@@ -2030,6 +2117,9 @@ $('#moreBtn').onclick = () => {
   }
   if (f) {
     items.push({ icon: IC.redo, label: 'Refazer', run: () => cm.redo() });
+    items.push({ icon: IC.dup, label: 'Selecionar tudo', run: () => { cm.focus(); cm.execCommand('selectAll'); } });
+    items.push({ icon: IC.copy, label: 'Colar', run: () => editAction('paste') });
+    items.push({ icon: IC.trash, label: 'Apagar todo o código', danger: true, run: () => editAction('clear') });
     items.push({ icon: IC.hash, label: 'Comentar / descomentar linha', run: () => cm.toggleComment() });
     items.push({ icon: IC.copy, label: 'Copiar todo o código', run: () => copyText(cm.getValue()) });
     items.push({ icon: IC.edit, label: 'Renomear arquivo', run: () => renameFile(f.id) });
